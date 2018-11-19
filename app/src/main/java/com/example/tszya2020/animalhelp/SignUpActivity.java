@@ -103,7 +103,6 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
                         }
 
                         // [START_EXCLUDE]
