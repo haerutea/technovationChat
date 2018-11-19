@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1010090222350",
+    "firebase_url": "https://animalhelp-1819.firebaseio.com",
+    "project_id": "animalhelp-1819",
+    "storage_bucket": "animalhelp-1819.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1010090222350:android:e48614fce513dbaa",
+        "android_client_info": {
+          "package_name": "com.example.tszya2020.animalhelp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1010090222350-evjtunqb5gbduge6p8dvbc4s4n3hqhsg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsTcksSZ9WC6jQ4gQChF93VQyqmZsM_Lc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

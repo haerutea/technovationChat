@@ -15,15 +15,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AuthActivity implements View.OnClickListener {
+public class SignUpActivity extends AuthActivity implements View.OnClickListener {
+
 
     //https://stackoverflow.com/questions/37886301/tag-has-private-access-in-android-support-v4-app-fragmentactivity
-    private static final String TAG = "LogIn";
+    private static final String TAG = "SignUp";
 
     private FirebaseAuth mAuth;
 
@@ -32,14 +34,14 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
     private EditText emailField;
     private EditText passwordField;
 
-    private Button bLogIn;
+    private Button bCreateAccount;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.sign_up_activity);
 
         // [START initialize_auth]
         // Initialize Firebase Auth
@@ -51,33 +53,34 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
         passwordField = findViewById(R.id.password);
 
         // Buttons
-        bLogIn = findViewById(R.id.emailSignInButton);
-        bLogIn.setOnClickListener(this);
+        bCreateAccount = findViewById(R.id.emailCreateAccountButton);
+        bCreateAccount.setOnClickListener(this);
     }
+
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.emailSignInButton) {
-            signIn(emailField.getText().toString(), passwordField.getText().toString());
+        if (i == bCreateAccount.getId()) {
+            createAccount(emailField.getText().toString(), passwordField.getText().toString());
         }
     }
 
-    private void signIn(String email, String password) {
-        Log.d(TAG, "signIn:" + email);
+    private void createAccount(String email, String password) {
+        Log.d(TAG, "createAccount:" + email);
         if (!formFilled()) {
             return;
         }
         showProgressDialog();
 
-        // [START sign_in_with_email]
-        mAuth.signInWithEmailAndPassword(email, password)
+        // [START create_user_with_email]
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
+                            Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
@@ -87,23 +90,31 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
                             }
                             catch(FirebaseAuthInvalidCredentialsException e)
                             {
-                                errorMsg = "Incorrect email or password.";
+                                errorMsg = "Invalid email.";
                             }
-                            catch(Exception e)
+                            catch(FirebaseAuthUserCollisionException e)
                             {
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                errorMsg = "The email address is already in use.";
+                            }
+                            catch (Exception e)
+                            {
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             }
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this, "Authentication failed. " + errorMsg,
+                            Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
                                     Toast.LENGTH_SHORT).show();
+                            updateUI(null);
                         }
+
+                        // [START_EXCLUDE]
                         hideProgressDialog();
                         // [END_EXCLUDE]
                     }
                 });
-        // [END sign_in_with_email]
+        // [END create_user_with_email]
     }
-    //TODO: DUPLICATED CODE IN SIGNUPACTIVITY. FFIIIIXXXXXX
+
+    //TODO: DUPLICATED CODE IN LOGINACTIVITY. FFIIIIXXXXXX
     private boolean formFilled() {
         boolean valid = true;
 
@@ -125,5 +136,4 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
 
         return valid;
     }
-
 }
