@@ -58,6 +58,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 */
+
+    //button listeners
     public void onClick(View v)
     {
         int id = v.getId();
@@ -73,6 +75,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //takes in user and gets profile data (or sign up logic)
     //TODO: CHANGE ALLLLLLLLLL THIS TO GO TO PROFILEACTIVITIY  INSTEAD
     protected void updateUI(FirebaseUser user)
     {
@@ -89,6 +92,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //popup shows loading...
     protected void showProgressDialog()
     {
         if (mProgressDialog == null)
@@ -101,6 +105,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mProgressDialog.show();
     }
 
+    //hide loading thing
     protected void hideProgressDialog()
     {
         if (mProgressDialog != null && mProgressDialog.isShowing())
