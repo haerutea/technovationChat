@@ -73,7 +73,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //takes in user and gets profile data (or sign up logic)
     //TODO: CHANGE ALLLLLLLLLL THIS TO GO TO PROFILEACTIVITIY  INSTEAD
     protected void updateUI(FirebaseUser user)
     {
