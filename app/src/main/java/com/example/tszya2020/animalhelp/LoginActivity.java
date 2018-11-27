@@ -51,14 +51,14 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
         passwordField = findViewById(R.id.password);
 
         // Buttons
-        bLogIn = findViewById(R.id.emailSignInButton);
+        bLogIn = findViewById(R.id.email_sign_in_button);
         bLogIn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.emailSignInButton) {
+        if (i == R.id.email_sign_in_button) {
             signIn(emailField.getText().toString(), passwordField.getText().toString());
         }
     }

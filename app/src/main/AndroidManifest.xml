@@ -14,19 +14,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name=".ProfileActivity"
-            android:label="@string/title_activity_profile"/>
+            android:name=".AccountActivity"
+            android:label="@string/title_activity_profile" />
+        <activity android:name=".AuthActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity android:name=".AuthActivity" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -35,7 +32,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
-
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
@@ -44,6 +40,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
+        <activity android:name=".ChatFragment"></activity>
     </application>
 
 </manifest>

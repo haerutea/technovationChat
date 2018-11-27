@@ -14,14 +14,25 @@
     <string name="emailpassword_status_fmt">Email User: %1$s (verified: %2$b)</string>
     <string name="loading">Loading…</string>
     <string name="auth_failed">Authentication failed</string>
+    <string name="username">Username</string>
     <string name="verify_email">Verify Email</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_up">Sign up</string>
     <string name="log_in">Log in</string>
     <string name="logged_in">Logged In</string>
+
+    <!-- related to profile -->
     <string name="log_out">Log Out</string>
     <string name="logged_out">Logged Out</string>
+    <string name="go_chat">Chat</string>
+
+    <!-- related to chat/message -->
+    <string name="send_button">Send</string>
+    <string name="message_hint">Write message here</string>
+
+    <!-- related to connecting to database -->
+    <string name="connection_error">Failed to connect to database!</string>
 
     <!-- Activity titles -->
     <string name="title_activity_login">Log In</string>

@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,12 +17,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     private ProgressDialog mProgressDialog;
 
-    Button bSign_up;
-    Button bLogin;
+    private Button bSign_up;
+    private Button bLogin;
 
     private SignUpActivity signUp;
     private LoginActivity login;
-    private ProfileActivity profile;
+    private AccountActivity profile;
     private AuthActivity auth;
 
     @Override
@@ -36,16 +35,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         signUp = new SignUpActivity();
         login = new LoginActivity();
-        profile = new ProfileActivity();
+        profile = new AccountActivity();
         auth = new AuthActivity();
 
-        bSign_up = findViewById(R.id.button_sign_up);
-        bLogin = findViewById(R.id.button_login);
+        bSign_up = findViewById(R.id.button_to_sign_up);
+        bLogin = findViewById(R.id.button_to_login);
 
         bSign_up.setOnClickListener(this);
         bLogin.setOnClickListener(this);
     }
-/*
+
     @Override
     public void onStart()
     {
@@ -57,7 +56,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             updateUI(currentUser);
         }
     }
-*/
+
     public void onClick(View v)
     {
         int id = v.getId();

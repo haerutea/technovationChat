@@ -1,5 +1,6 @@
 package com.example.tszya2020.animalhelp;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import android.os.Bundle;
@@ -17,11 +18,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class SignUpActivity extends AuthActivity implements View.OnClickListener {
+public class SignUpActivity extends AuthActivity implements View.OnClickListener, OnCompleteListener<AuthResult>
+{
 
 
     //https://stackoverflow.com/questions/37886301/tag-has-private-access-in-android-support-v4-app-fragmentactivity
@@ -29,88 +32,113 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
 
     private FirebaseAuth mAuth;
 
-    // UI references.
+    private FirebaseAuth.AuthStateListener authListener;
 
+    // UI references.
+    private EditText usernameField;
     private EditText emailField;
     private EditText passwordField;
 
     private Button bCreateAccount;
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up_activity);
 
-        // [START initialize_auth]
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
-
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if(user != null)
+                {
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(usernameField.getText().toString()).build();
+                    user.updateProfile(profileUpdates);
+                    user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("Display name: ", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                            }
+                        }
+                    });
+                }
+            }
+        };
         // Set up the login form.
-        emailField = findViewById(R.id.email);
-        passwordField = findViewById(R.id.password);
+        usernameField = findViewById(R.id.sign_up_username);
+        emailField = findViewById(R.id.sign_up_email);
+        passwordField = findViewById(R.id.sign_up_password);
 
         // Buttons
-        bCreateAccount = findViewById(R.id.emailCreateAccountButton);
+        bCreateAccount = findViewById(R.id.email_sign_up_button);
         bCreateAccount.setOnClickListener(this);
     }
 
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
         int i = v.getId();
-        if (i == bCreateAccount.getId()) {
+        if (i == bCreateAccount.getId())
+        {
             createAccount(emailField.getText().toString(), passwordField.getText().toString());
         }
     }
 
-    private void createAccount(String email, String password) {
+    private void createAccount(String email, String password)
+    {
         Log.d(TAG, "createAccount:" + email);
-        if (!formFilled()) {
+        if (!formFilled())
+        {
             return;
         }
         showProgressDialog();
 
-        // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            String errorMsg = "";
-                            try{
-                                throw task.getException();
-                            }
-                            catch(FirebaseAuthInvalidCredentialsException e)
-                            {
-                                errorMsg = "Invalid email.";
-                            }
-                            catch(FirebaseAuthUserCollisionException e)
-                            {
-                                errorMsg = "The email address is already in use.";
-                            }
-                            catch (Exception e)
-                            {
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            }
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(this, this);
+    }
 
-                        // [START_EXCLUDE]
-                        hideProgressDialog();
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END create_user_with_email]
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task) {
+        if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d(TAG, "createUserWithEmail:success");
+            FirebaseUser user = mAuth.getCurrentUser();
+            updateUI(user);
+        }
+        else
+        {
+            String errorMsg = "";
+            try
+            {
+                throw task.getException();
+            }
+            catch(FirebaseAuthInvalidCredentialsException e)
+            {
+                errorMsg = "Invalid email.";
+            }
+            catch(FirebaseAuthUserCollisionException e)
+            {
+                errorMsg = "The email address is already in use.";
+            }
+            catch (Exception e)
+            {
+                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+            }
+            // If sign in fails, display a message to the user.
+            Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        // [START_EXCLUDE]
+        hideProgressDialog();
+        // [END_EXCLUDE]
     }
 
     //TODO: DUPLICATED CODE IN LOGINACTIVITY. FFIIIIXXXXXX
@@ -121,7 +149,8 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         if (TextUtils.isEmpty(email)) {
             emailField.setError("Required.");
             valid = false;
-        } else {
+        }
+        else {
             emailField.setError(null);
         }
 
@@ -129,10 +158,29 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         if (TextUtils.isEmpty(password)) {
             passwordField.setError("Required.");
             valid = false;
-        } else {
+        }
+        else if(!password.matches("[A-Za-z0-9]"))
+        {
+            passwordField.setError("Only alphabet and digits please.");
+        }
+        else
+        {
             passwordField.setError(null);
         }
-
         return valid;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAuth.addAuthStateListener(authListener); //firebaseAuth is of class FirebaseAuth
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authListener != null) {
+            mAuth.removeAuthStateListener(authListener);
+        }
     }
 }
