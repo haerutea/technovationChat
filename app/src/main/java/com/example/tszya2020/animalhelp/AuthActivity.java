@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
@@ -72,6 +73,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //takes in user and gets profile data (or sign up logic)
     //TODO: CHANGE ALLLLLLLLLL THIS TO GO TO PROFILEACTIVITIY  INSTEAD
     protected void updateUI(FirebaseUser user)
     {
