@@ -38,6 +38,7 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
     private EditText usernameField;
     private EditText emailField;
     private EditText passwordField;
+    private EditText rePasswordField;
 
     private Button bCreateAccount;
 
@@ -50,6 +51,7 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        //https://stackoverflow.com/questions/41105826/change-displayname-in-firebase/43680527#43680527
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -74,6 +76,7 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         usernameField = findViewById(R.id.sign_up_username);
         emailField = findViewById(R.id.sign_up_email);
         passwordField = findViewById(R.id.sign_up_password);
+        rePasswordField = findViewById(R.id.sign_up_re_password);
 
         // Buttons
         bCreateAccount = findViewById(R.id.email_sign_up_button);
@@ -102,6 +105,7 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, this);
+
     }
 
     @Override
@@ -155,13 +159,20 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         }
 
         String password = passwordField.getText().toString();
+        String rePassword = rePasswordField.getText().toString();
+
         if (TextUtils.isEmpty(password)) {
             passwordField.setError("Required.");
             valid = false;
         }
-        else if(!password.matches("[A-Za-z0-9]"))
+        else if(!password.matches("([A-Za-z0-9])+"))
         {
             passwordField.setError("Only alphabet and digits please.");
+        }
+        else if(!(password.equals(rePassword)))
+        {
+            passwordField.setError("Passwords don't match.");
+            rePasswordField.setError("Passwords don't match.");
         }
         else
         {
@@ -170,6 +181,7 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         return valid;
     }
 
+    //https://stackoverflow.com/questions/41105826/change-displayname-in-firebase/43680527#43680527
     @Override
     protected void onResume() {
         super.onResume();

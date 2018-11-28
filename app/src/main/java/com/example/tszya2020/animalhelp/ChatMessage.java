@@ -6,6 +6,10 @@ public class ChatMessage {
     private String mId;
     private String mMessage;
 
+    public ChatMessage()
+    {
+
+    }
     public ChatMessage(String id, String name, String message)
     {
         mId = id;

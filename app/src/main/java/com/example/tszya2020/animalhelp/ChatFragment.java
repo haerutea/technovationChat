@@ -1,5 +1,6 @@
 package com.example.tszya2020.animalhelp;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,17 +26,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatFragment extends Fragment
-        implements TextView.OnEditorActionListener, ValueEventListener, View.OnClickListener
+        implements TextView.OnEditorActionListener
 {
 
     private FirebaseUser user;
     private DatabaseReference databaseReference;
     private FirebaseAnalytics messageAnalytics;
     private ChatAdapter adapter;
+    private FragmentChangeListener mCallback;
 
-    private final String loggingName = "ChatActivity";
+    private final String userLoggingName = "UserCreation";
+    private final String loggingName = "ChatFragmentDatabase";
     //UI references
     //https://developer.android.com/reference/android/support/v7/widget/LinearLayoutManager
     private LinearLayoutManager linearLayoutManager;
@@ -45,6 +50,14 @@ public class ChatFragment extends Fragment
     private String messageUserId;
     private String messageUsername;
 
+    private String usersBranch;
+    private String user1;
+    private String user2;
+    private String opposingUsername;
+    private String roomName;
+
+    private int count;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,20 +65,24 @@ public class ChatFragment extends Fragment
         user = FirebaseAuth.getInstance().getCurrentUser();
         messageAnalytics = FirebaseAnalytics.getInstance(this.getContext());
 
+        adapter = new ChatAdapter();
         linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setStackFromEnd(true);
-
         messageUsername = user.getDisplayName();
         messageUserId = user.getUid();
 
-        adapter = new ChatAdapter();
+        usersBranch = "users";
+        user1 = "user1";
+        user2 = "user2";
+        count = 1;
+        roomName = "room" + count;
 
         setupConnection();
     }
 
 
     //https://github.com/DeKoServidoni/FirebaseChatAndroid/blob/660ae1b823ad645c921dc4dd57febaa7420841d8/app/src/main/java/com/dekoservidoni/firebasechat/fragments/ChatFragment.java#L78
-    //when a new chat is sent and a new view needs to be created
+    //when user presses on "Chat"
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState)
@@ -74,9 +91,6 @@ public class ChatFragment extends Fragment
 
         messageInput = baseView.findViewById(R.id.chat_input);
         messageInput.setOnEditorActionListener(this);
-
-        sendButton = baseView.findViewById(R.id.send_button);
-        sendButton.setOnClickListener(this);
 
         RecyclerView chat = baseView.findViewById(R.id.chat_recycler_view);
         chat.setLayoutManager(linearLayoutManager);
@@ -89,47 +103,106 @@ public class ChatFragment extends Fragment
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
     {
 
-        ChatMessage message = new ChatMessage(messageUserId,
-                messageUsername, messageInput.getText().toString());
+        if(!messageInput.getText().toString().isEmpty())
+        {
+            ChatMessage message = new ChatMessage(messageUserId,
+                    messageUsername, messageInput.getText().toString());
 
-        databaseReference.child(String.valueOf(new Date().getTime())).setValue(message);
+            databaseReference.child(String.valueOf(new Date().getTime())).setValue(message);
 
-        messageInput.setText("");
+            linearLayoutManager.scrollToPosition(adapter.getItemCount() - 1);
+
+            messageInput.setText("");
+        }
         return true;
     }
 
     //connecting to database
-    private void setupConnection() {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addValueEventListener(this);
+    private void setupConnection()
+    {
+
+        databaseReference = FirebaseDatabase.getInstance().getReference(roomName);
+        databaseReference.child(usersBranch).push();
+        databaseReference.child(usersBranch).child(user1).push();
+        databaseReference.child(usersBranch).child(user2).push();
+
+        final DatabaseReference usersTab = databaseReference.child("users");
+
+        usersTab.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(userLoggingName, "Success");
+                for(DataSnapshot item : dataSnapshot.getChildren())
+                {
+                    if(item.getValue() == null)
+                    {
+                        usersTab.child(user1).setValue(messageUserId);
+                        return;
+                    }
+                    else
+                    {
+                        usersTab.child(user2).setValue(messageUserId);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(userLoggingName, "Failed: " + databaseError.getMessage());
+            }
+        });
+        usersTab.child("user1").push().setValue(messageUserId);
+        usersTab.child("user2");
+
+        databaseReference.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                Log.d(loggingName,"Success");
+
+                adapter.clearContent();
+
+                //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
+                for(DataSnapshot item : dataSnapshot.getChildren())
+                {
+                    //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
+                    ChatMessage data = item.getValue(ChatMessage.class);
+                    adapter.addChat(data);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(loggingName,"Failed. Error: " + databaseError.getMessage());
+                Toast.makeText(getContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    @Override
-    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        Log.d(loggingName,"Success");
-
-        adapter.clearContent();
-
-        //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
-        for(DataSnapshot item : dataSnapshot.getChildren()) {
-            //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
-            ChatMessage data = item.getValue(ChatMessage.class);
-            adapter.addChat(data);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
+    /* getting rid of send_button
     public void onClick(View view) {
         ChatMessage chatMessage = new ChatMessage(messageUserId,
                 messageUsername, messageInput.getText().toString());
         databaseReference.child("messages").push().setValue(chatMessage);
         messageInput.setText("");
         messageAnalytics.logEvent("message_sent", null);
+    }*/
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallback = (FragmentChangeListener) context;
     }
 
     @Override
-    public void onCancelled(@NonNull DatabaseError databaseError) {
-        Log.e(loggingName,"Failed. Error: " + databaseError.getMessage());
-        Toast.makeText(this.getContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
+    public void onDetach() {
+        super.onDetach();
+        //https://stackoverflow.com/a/36185703
+        databaseReference.removeValue();
+        mCallback = null;
     }
 }

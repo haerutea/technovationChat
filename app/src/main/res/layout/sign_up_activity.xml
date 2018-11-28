@@ -39,7 +39,7 @@
                     android:id="@+id/sign_up_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_above="@id/email"
+                    android:layout_above="@id/sign_up_email"
                     android:hint="@string/username"
                     android:maxLines="1"
                     android:singleLine="true" />
@@ -54,8 +54,8 @@
                     android:id="@+id/sign_up_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_above="@id/email"
-                    android:layout_below="@id/password"
+                    android:layout_above="@id/sign_up_password"
+                    android:layout_below="@id/sign_up_username"
                     android:hint="@string/email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
@@ -71,13 +71,29 @@
                     android:id="@+id/sign_up_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/email"
+                    android:layout_above="@id/sign_up_re_password"
+                    android:layout_below="@id/sign_up_email"
                     android:hint="@string/password"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/sign_up_re_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sign_up_password"
+                android:hint="@string/re_password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"/>
+        </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/email_sign_up_button"

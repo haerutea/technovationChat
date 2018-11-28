@@ -3,7 +3,6 @@ package com.example.tszya2020.animalhelp;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 public class AccountActivity extends AppCompatActivity implements FragmentChangeListener {
@@ -36,6 +35,11 @@ public class AccountActivity extends AppCompatActivity implements FragmentChange
         replaceFragment(chatFragment);
     }
 
+    public void openProfile()
+    {
+        Fragment profileFragment = new UserProfileInfo();
+        replaceFragment(profileFragment);
+    }
     private void replaceFragment(Fragment newFragment)
     //THIS IS DRIVING ME INSANE WHY DOES IT REQUIRE android.app.Fragment HERE WHEN THE DOCS SAY THERE'S ONLY 1 FRAGMENT???
     {

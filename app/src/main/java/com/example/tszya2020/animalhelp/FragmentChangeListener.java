@@ -5,5 +5,6 @@ public interface FragmentChangeListener
 {
     void openChat();
 
+    void openProfile();
 
 }
