@@ -151,8 +151,9 @@ public class ChatFragment extends Fragment
                 Log.d(userLoggingName, "Failed: " + databaseError.getMessage());
             }
         });
+        /*
         usersTab.child("user1").push().setValue(messageUserId);
-        usersTab.child("user2");
+        usersTab.child("user2");*/
 
         databaseReference.addValueEventListener(new ValueEventListener()
         {
