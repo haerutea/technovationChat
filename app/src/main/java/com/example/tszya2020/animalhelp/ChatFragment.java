@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,26 +25,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ChatFragment extends Fragment
         implements TextView.OnEditorActionListener
 {
 
     private FirebaseUser user;
-    private DatabaseReference databaseReference;
-    private FirebaseAnalytics messageAnalytics;
+    private DatabaseReference roomReference;
+    private DatabaseReference chatsRef;
     private ChatAdapter adapter;
     private FragmentChangeListener mCallback;
 
     private final String userLoggingName = "UserCreation";
     private final String loggingName = "ChatFragmentDatabase";
+
     //UI references
     //https://developer.android.com/reference/android/support/v7/widget/LinearLayoutManager
     private LinearLayoutManager linearLayoutManager;
     private EditText messageInput;
     private Button sendButton;
+    private TextView chatRoomName;
 
     private String messageUserId;
     private String messageUsername;
@@ -53,19 +52,18 @@ public class ChatFragment extends Fragment
     private String usersBranch;
     private String user1;
     private String user2;
-    private String opposingUsername;
     private String roomName;
+    private String chatChild;
+    private boolean newRoom;
 
-    private int count;
+    private long count;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        messageAnalytics = FirebaseAnalytics.getInstance(this.getContext());
 
-        adapter = new ChatAdapter();
         linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setStackFromEnd(true);
         messageUsername = user.getDisplayName();
@@ -74,10 +72,13 @@ public class ChatFragment extends Fragment
         usersBranch = "users";
         user1 = "user1";
         user2 = "user2";
-        count = 1;
-        roomName = "room" + count;
+        chatChild = "chats";
+        newRoom = false;
 
+        /*
         setupConnection();
+        setupChat();*/
+        adapter = new ChatAdapter();
     }
 
 
@@ -89,14 +90,44 @@ public class ChatFragment extends Fragment
     {
         View baseView = inflater.inflate(R.layout.chat_fragment, container, false);
 
+        chatRoomName = baseView.findViewById(R.id.room_name);
+
         messageInput = baseView.findViewById(R.id.chat_input);
         messageInput.setOnEditorActionListener(this);
+
+        setupConnection();
 
         RecyclerView chat = baseView.findViewById(R.id.chat_recycler_view);
         chat.setLayoutManager(linearLayoutManager);
         chat.setAdapter(adapter);
 
         return baseView;
+/*
+        Query thing = FirebaseDatabase.getInstance().getReference().child(roomName);
+
+        FirebaseListOptions<Message> options = new FirebaseListOptions.Builder<Message>().setQuery(messages, Message.class).setLayout(R.layout.message).build();
+
+        ListView messageList = chatActivity.findViewById(R.id.message_list);
+        adapter = new FirebaseListAdapter<Message>(options){
+            @Override
+            protected void populateView(View v, Message model, int position) {
+                // Get references to the views of message.xml
+                TextView messageText = v.findViewById(R.id.message_text);
+                TextView messageUser = v.findViewById(R.id.message_user);
+                TextView messageTime = v.findViewById(R.id.message_time);
+
+                // Set their text
+                messageText.setText(model.getMessageBody());
+                messageUser.setText(model.getUser());
+
+                // Format the date before showing it
+                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
+                        model.getTime()));
+            }
+        };
+
+        messageList.setAdapter(adapter);
+        adapter.startListening();*/
     }
 
     //when user presses enter on keyboard
@@ -108,7 +139,7 @@ public class ChatFragment extends Fragment
             ChatMessage message = new ChatMessage(messageUserId,
                     messageUsername, messageInput.getText().toString());
 
-            databaseReference.child(String.valueOf(new Date().getTime())).setValue(message);
+            chatsRef.child(String.valueOf(new Date().getTime())).setValue(message);
 
             linearLayoutManager.scrollToPosition(adapter.getItemCount() - 1);
 
@@ -118,18 +149,33 @@ public class ChatFragment extends Fragment
     }
 
     //connecting to database
-    private void setupConnection()
-    {
+    private void setupConnection() {
+        FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                count = dataSnapshot.getChildrenCount();
+                Log.d(loggingName, "room number get success");
+            }
 
-        databaseReference = FirebaseDatabase.getInstance().getReference(roomName);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(loggingName, "room number get failed: " + databaseError.getMessage());
+            }
+        });
+
+        count = count + 1;
+        roomName = "room_" + count;
+        chatRoomName.setText(roomName);
+        roomReference = FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString());
+        /*
         databaseReference.child(usersBranch).push();
         databaseReference.child(usersBranch).child(user1).push();
-        databaseReference.child(usersBranch).child(user2).push();
+        databaseReference.child(usersBranch).child(user2).push();*/
 
-        final DatabaseReference usersTab = databaseReference.child("users");
+        final DatabaseReference usersTab = roomReference.child(usersBranch);
 
-        usersTab.addValueEventListener(new ValueEventListener() {
-            @Override
+        usersTab.addListenerForSingleValueEvent(new ValueEventListener() {
+
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(userLoggingName, "Success");
                 for(DataSnapshot item : dataSnapshot.getChildren())
@@ -145,17 +191,34 @@ public class ChatFragment extends Fragment
                     }
                 }
             }
-
+            /*
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(userLoggingName, "add child success");
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    usersTab.child(user1).push().setValue(user);
+                } else if (dataSnapshot.getChildrenCount() == 1) {
+                    usersTab.child(user2).push().setValue(user);
+                } else {
+                    newRoom = true;
+                    count = count + 1;
+                    roomName = "room_" + count;
+                    chatRoomName.setText(roomName);
+                    FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString()).
+                            child(usersBranch).child(user1).push().setValue(user);
+                    //TODO: SEE THIS IF THIS WORKS? vvv
+                }
+            }
+            */
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(userLoggingName, "Failed: " + databaseError.getMessage());
             }
         });
-        /*
-        usersTab.child("user1").push().setValue(messageUserId);
-        usersTab.child("user2");*/
 
-        databaseReference.addValueEventListener(new ValueEventListener()
+        roomReference = FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString());
+        chatsRef = roomReference.child(chatChild);
+        chatsRef.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
@@ -173,8 +236,6 @@ public class ChatFragment extends Fragment
                 }
                 adapter.notifyDataSetChanged();
             }
-
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -203,7 +264,9 @@ public class ChatFragment extends Fragment
     public void onDetach() {
         super.onDetach();
         //https://stackoverflow.com/a/36185703
-        databaseReference.removeValue();
+        roomReference.removeValue();
         mCallback = null;
     }
+
+
 }
