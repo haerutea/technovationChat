@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via uEmail/password.
  */
 public class LoginActivity extends AuthActivity implements View.OnClickListener {
 
@@ -87,7 +87,7 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
                             }
                             catch(FirebaseAuthInvalidCredentialsException e)
                             {
-                                errorMsg = "Incorrect email or password.";
+                                errorMsg = "Incorrect uEmail or password.";
                             }
                             catch(Exception e)
                             {

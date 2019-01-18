@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class UserProfileInfo extends Fragment implements View.OnClickListener {
+public class UserProfileInfo extends Fragment
+        implements View.OnClickListener
+{
 
     //changing from fragment to another: https://developer.android.com/training/basics/fragments/communicating
     private FragmentChangeListener mCallback;
@@ -33,7 +35,9 @@ public class UserProfileInfo extends Fragment implements View.OnClickListener {
 
     }
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState)
+    {
         View profileView = inflater.inflate(R.layout.profile_fragment, container, false);
         super.onCreate(savedInstanceState);
 
@@ -58,12 +62,14 @@ public class UserProfileInfo extends Fragment implements View.OnClickListener {
     }
 
     //https://developer.android.com/training/basics/fragments/communicating
-    public void setFragmentChangeListener(Activity activity) {
+    public void setFragmentChangeListener(Activity activity)
+    {
         mCallback = (FragmentChangeListener) activity;
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
         int id = v.getId();
         if(id == chat.getId())
         {

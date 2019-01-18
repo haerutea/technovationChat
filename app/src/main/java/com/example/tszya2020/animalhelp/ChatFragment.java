@@ -59,7 +59,8 @@ public class ChatFragment extends Fragment
     private long count;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -70,10 +71,6 @@ public class ChatFragment extends Fragment
         messageUserId = user.getUid();
 
         usersBranch = "users";
-        user1 = "user1";
-        user2 = "user2";
-        chatChild = "chats";
-        newRoom = false;
 
         /*
         setupConnection();
@@ -149,16 +146,20 @@ public class ChatFragment extends Fragment
     }
 
     //connecting to database
-    private void setupConnection() {
-        FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
+    private void setupConnection()
+    {
+        FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
                 count = dataSnapshot.getChildrenCount();
                 Log.d(loggingName, "room number get success");
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
                 Log.d(loggingName, "room number get failed: " + databaseError.getMessage());
             }
         });
@@ -174,9 +175,11 @@ public class ChatFragment extends Fragment
 
         final DatabaseReference usersTab = roomReference.child(usersBranch);
 
-        usersTab.addListenerForSingleValueEvent(new ValueEventListener() {
+        usersTab.addListenerForSingleValueEvent(new ValueEventListener()
+        {
 
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
                 Log.d(userLoggingName, "Success");
                 for(DataSnapshot item : dataSnapshot.getChildren())
                 {
@@ -193,11 +196,14 @@ public class ChatFragment extends Fragment
             }
             /*
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
                 Log.d(userLoggingName, "add child success");
-                if (dataSnapshot.getChildrenCount() == 0) {
+                if (dataSnapshot.getChildrenCount() == 0)
+                {
                     usersTab.child(user1).push().setValue(user);
-                } else if (dataSnapshot.getChildrenCount() == 1) {
+                } else if (dataSnapshot.getChildrenCount() == 1)
+                {
                     usersTab.child(user2).push().setValue(user);
                 } else {
                     newRoom = true;
@@ -211,7 +217,8 @@ public class ChatFragment extends Fragment
             }
             */
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
                 Log.d(userLoggingName, "Failed: " + databaseError.getMessage());
             }
         });
@@ -238,7 +245,8 @@ public class ChatFragment extends Fragment
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
                 Log.e(loggingName,"Failed. Error: " + databaseError.getMessage());
                 Toast.makeText(getContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
             }
@@ -246,7 +254,8 @@ public class ChatFragment extends Fragment
     }
 
     /* getting rid of send_button
-    public void onClick(View view) {
+    public void onClick(View view)
+    {
         ChatMessage chatMessage = new ChatMessage(messageUserId,
                 messageUsername, messageInput.getText().toString());
         databaseReference.child("messages").push().setValue(chatMessage);
@@ -255,13 +264,15 @@ public class ChatFragment extends Fragment
     }*/
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Context context)
+    {
         super.onAttach(context);
         mCallback = (FragmentChangeListener) context;
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach()
+    {
         super.onDetach();
         //https://stackoverflow.com/a/36185703
         roomReference.removeValue();

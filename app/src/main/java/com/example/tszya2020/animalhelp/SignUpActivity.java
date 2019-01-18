@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via uEmail/password.
  */
 public class SignUpActivity extends AuthActivity implements View.OnClickListener, OnCompleteListener<AuthResult>
 {
@@ -125,11 +125,11 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
             }
             catch(FirebaseAuthInvalidCredentialsException e)
             {
-                errorMsg = "Invalid email.";
+                errorMsg = "Invalid uEmail.";
             }
             catch(FirebaseAuthUserCollisionException e)
             {
-                errorMsg = "The email address is already in use.";
+                errorMsg = "The uEmail address is already in use.";
             }
             catch (Exception e)
             {

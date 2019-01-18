@@ -59,7 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     public void onBindViewHolder(@NonNull MessageViewHolder messageHolder, int positionIndex) {
         ChatMessage data = messageContent.get(positionIndex);
 
-        messageHolder.username.setText(data.getName());
+        messageHolder.username.setText(data.getSenderName());
         messageHolder.message.setText(data.getMessage());
     }
 
