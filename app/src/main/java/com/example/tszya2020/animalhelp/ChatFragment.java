@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment
         messageUsername = user.getDisplayName();
         messageUserId = user.getUid();
 
-        usersBranch = "users";
+        usersBranch = "users/";
 
         /*
         setupConnection();
@@ -160,7 +160,7 @@ public class ChatFragment extends Fragment
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError)
             {
-                Log.d(loggingName, "room number get failed: " + databaseError.getMessage());
+                Log.e(loggingName, "room number get failed: " + databaseError.getMessage());
             }
         });
 

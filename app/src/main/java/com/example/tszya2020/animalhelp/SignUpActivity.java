@@ -1,9 +1,11 @@
 package com.example.tszya2020.animalhelp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,11 +21,12 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * A login screen that offers login via uEmail/password.
  */
-public class SignUpActivity extends AuthActivity implements View.OnClickListener, OnCompleteListener<AuthResult>
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener
 {
 
 
@@ -101,51 +104,50 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         {
             return;
         }
-        showProgressDialog();
+        final ProgressDialog loading = ProgressDialogUtils
+                .showProgressDialog(this, getString(R.string.loading));
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, this);
-
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            signUp(user);
+                        }
+                        else
+                        {
+                            String errorMsg = "";
+                            try
+                            {
+                                throw task.getException();
+                            }
+                            catch(FirebaseAuthInvalidCredentialsException e)
+                            {
+                                errorMsg = "Invalid email.";
+                            }
+                            catch(FirebaseAuthUserCollisionException e)
+                            {
+                                errorMsg = "The email address is already in use.";
+                            }
+                            catch (Exception e)
+                            {
+                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            }
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        loading.dismiss();
+                    }
+                });
     }
 
-    @Override
-    public void onComplete(@NonNull Task<AuthResult> task) {
-        if (task.isSuccessful()) {
-            // Sign in success, update UI with the signed-in user's information
-            Log.d(TAG, "createUserWithEmail:success");
-            FirebaseUser user = mAuth.getCurrentUser();
-            updateUI(user);
-        }
-        else
-        {
-            String errorMsg = "";
-            try
-            {
-                throw task.getException();
-            }
-            catch(FirebaseAuthInvalidCredentialsException e)
-            {
-                errorMsg = "Invalid uEmail.";
-            }
-            catch(FirebaseAuthUserCollisionException e)
-            {
-                errorMsg = "The uEmail address is already in use.";
-            }
-            catch (Exception e)
-            {
-                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-            }
-            // If sign in fails, display a message to the user.
-            Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        // [START_EXCLUDE]
-        hideProgressDialog();
-        // [END_EXCLUDE]
-    }
-
-    //TODO: DUPLICATED CODE IN LOGINACTIVITY. FFIIIIXXXXXX
     private boolean formFilled() {
         boolean valid = true;
 
@@ -194,5 +196,16 @@ public class SignUpActivity extends AuthActivity implements View.OnClickListener
         if (authListener != null) {
             mAuth.removeAuthStateListener(authListener);
         }
+    }
+
+    protected void signUp(FirebaseUser user)
+    {
+        ProgressDialogUtils.showProgressDialog(this, getString(R.string.loading));
+        User newUser = new User(user.getDisplayName(), user.getEmail(), Constants.DEFAULT);
+        FirebaseDatabase.getInstance().getReference().child("user/" + user.getUid()).setValue(newUser);
+
+        Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+        intent.putExtra(Constants.UID_KEY, user.getUid());
+        startActivity(intent);
     }
 }

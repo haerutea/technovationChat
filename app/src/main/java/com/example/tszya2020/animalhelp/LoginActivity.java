@@ -1,8 +1,11 @@
 package com.example.tszya2020.animalhelp;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,11 +19,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 /**
  * A login screen that offers login via uEmail/password.
  */
-public class LoginActivity extends AuthActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     //https://stackoverflow.com/questions/37886301/tag-has-private-access-in-android-support-v4-app-fragmentactivity
     private static final String TAG = "LogIn";
@@ -41,16 +50,11 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
-        // [START initialize_auth]
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
 
-        // Set up the login form.
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
 
-        // Buttons
         bLogIn = findViewById(R.id.email_sign_in_button);
         bLogIn.setOnClickListener(this);
     }
@@ -68,21 +72,26 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
         if (!formFilled()) {
             return;
         }
-        showProgressDialog();
+        ProgressDialog loading = ProgressDialogUtils
+                .showProgressDialog(this, getString(R.string.loading));
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful())
+                        {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
+                            logIn(user);
+                        }
+                        else
+                        {
                             String errorMsg = "";
-                            try{
+                            try
+                            {
                                 throw task.getException();
                             }
                             catch(FirebaseAuthInvalidCredentialsException e)
@@ -97,13 +106,10 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
                             Toast.makeText(LoginActivity.this, "Authentication failed. " + errorMsg,
                                     Toast.LENGTH_SHORT).show();
                         }
-                        hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
                 });
-        // [END sign_in_with_email]
+        loading.dismiss();
     }
-    //TODO: DUPLICATED CODE IN SIGNUPACTIVITY. FFIIIIXXXXXX
     private boolean formFilled() {
         boolean valid = true;
 
@@ -126,4 +132,29 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
         return valid;
     }
 
+    protected void logIn(FirebaseUser user)
+    {
+        FirebaseDatabase.getInstance().getReference().child("user").child(user.getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener()
+                {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap userMap = (HashMap) dataSnapshot.getValue();
+                String name = (String) userMap.get("name");
+                String email = (String) userMap.get("email");
+                String rank = (String) userMap.get("rank");
+                User userPref = new User(name, email, rank);
+                UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "login failed: " + databaseError.getMessage());
+            }
+        });
+
+        Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+        intent.putExtra(Constants.UID_KEY, user.getUid());
+        startActivity(intent);
+    }
 }

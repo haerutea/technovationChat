@@ -73,13 +73,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //TODO: CHANGE ALLLLLLLLLL THIS TO GO TO PROFILEACTIVITIY  INSTEAD
     protected void updateUI(FirebaseUser user)
     {
         showProgressDialog();
         if (user != null)
         {
             Intent intent = new Intent(getApplicationContext(), profile.getClass());
+            intent.putExtra(Constants.UID_KEY, user.getUid());
             startActivity(intent);
         }
         else

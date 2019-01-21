@@ -17,15 +17,14 @@ public class AccountActivity extends AppCompatActivity implements FragmentChange
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_activity);
-        initFragment = new UserProfileInfo();
+        initFragment = new ChatFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, initFragment).commit();
-
     }
 
     @Override
     public void onAttachFragment(Fragment newFragment) {
-        if (newFragment instanceof UserProfileInfo) {
-            UserProfileInfo profileFragment = (UserProfileInfo) newFragment;
+        if (newFragment instanceof ProfileFragment) {
+            ProfileFragment profileFragment = (ProfileFragment) newFragment;
             profileFragment.setFragmentChangeListener(this);
         }
     }
@@ -35,11 +34,13 @@ public class AccountActivity extends AppCompatActivity implements FragmentChange
         replaceFragment(chatFragment);
     }
 
+    //TODO: USELESS?
     public void openProfile()
     {
-        Fragment profileFragment = new UserProfileInfo();
+        Fragment profileFragment = new ProfileFragment();
         replaceFragment(profileFragment);
     }
+
     private void replaceFragment(Fragment newFragment)
     //THIS IS DRIVING ME INSANE WHY DOES IT REQUIRE android.app.Fragment HERE WHEN THE DOCS SAY THERE'S ONLY 1 FRAGMENT???
     {

@@ -40,7 +40,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
-        <activity android:name=".ChatFragment"></activity>
+        <activity android:name=".ChatFragment" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

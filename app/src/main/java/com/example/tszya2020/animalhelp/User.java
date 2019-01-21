@@ -47,4 +47,9 @@ public class User
     {
         return uEmail;
     }
+
+    public String getRank()
+    {
+        return uRank;
+    }
 }
