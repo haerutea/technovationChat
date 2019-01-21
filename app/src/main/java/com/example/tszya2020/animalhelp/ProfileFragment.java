@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class UserProfileInfo extends Fragment
+public class ProfileFragment extends Fragment
         implements View.OnClickListener
 {
 
@@ -30,7 +30,7 @@ public class UserProfileInfo extends Fragment
     private Button chat;
     private Button logout;
 
-    public UserProfileInfo()
+    public ProfileFragment()
     {
 
     }
@@ -38,7 +38,7 @@ public class UserProfileInfo extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState)
     {
-        View profileView = inflater.inflate(R.layout.profile_fragment, container, false);
+        View profileView = inflater.inflate(R.layout.profile_activity, container, false);
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
