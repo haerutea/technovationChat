@@ -10,7 +10,7 @@ public class Status{
     public Status(boolean onlineStatus, boolean chattingStatus){
         this.isOnline = onlineStatus;
         this.isChatting = chattingStatus;
-        this.timestamp = new Timestamp(System.currentTimeMillis());
+        //this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public void setIsOnline(boolean online) {
@@ -24,6 +24,7 @@ public class Status{
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
+
     public boolean getIsOnline() {
         return isOnline;
     }

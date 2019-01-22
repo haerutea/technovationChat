@@ -1,24 +1,25 @@
 package com.example.tszya2020.animalhelp;
 
-import java.sql.Timestamp;
-
 public class User
 {
     private String username;
     private String email;
     private String rank;
-    //private Status uStatus;
+    private boolean onlineStatus;
+    private boolean chattingStatus;
 
     public User()
     {
 
     }
-    public User(String name, String inEmail, String inRank)
+
+    public User(String name, String inEmail, String inRank,  boolean online, boolean chatting)
     {
         username = name;
         email = inEmail;
         rank = inRank;
-        //uStatus = new Status(true, false);
+        onlineStatus = online;
+        chattingStatus = chatting;
     }
 
     public void setUsername(String inUsername)
@@ -36,12 +37,15 @@ public class User
         this.rank = inputRank;
     }
 
-    /*
-    public void setStatus(boolean online, boolean chatting, Timestamp timestamp) {
-        uStatus.setIsOnline(online);
-        uStatus.setIsChatting(chatting);
-        uStatus.setTimestamp(timestamp);
-    }*/
+    public void setOnline(boolean inputOnline)
+    {
+        this.onlineStatus = inputOnline;
+    }
+
+    public void setChatting(boolean inputChatting)
+    {
+        this.chattingStatus = inputChatting;
+    }
 
     public String getUsername()
     {
@@ -56,5 +60,15 @@ public class User
     public String getRank()
     {
         return rank;
+    }
+
+    public boolean getOnline()
+    {
+        return onlineStatus;
+    }
+
+    public boolean getChatting()
+    {
+        return chattingStatus;
     }
 }
