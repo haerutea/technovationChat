@@ -46,10 +46,14 @@ public class ProfileActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
 
+        username = findViewById(R.id.profile_username);
+        email = findViewById(R.id.profile_email);
+        chat = findViewById(R.id.chat_button);
+        logout = findViewById(R.id.log_out_button);
+
         //EL - There is no user in the Database at this point. It only lives in FirebaseAuth, not FirebaseDatabase,
         // so if a user can't be found in the database, you would have to get the info from auth and save it in the database.
         //The code bellow always returns null for the user since its never saved to the database.
-
         userUid = getIntent().getStringExtra(Constants.UID_KEY);
         usersRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", usersRef.toString());
@@ -58,11 +62,22 @@ public class ProfileActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
+
                     //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
-                    for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                        userAccount = userSnapshot.getValue(User.class);
-                        Log.d("userChildren", userSnapshot.toString());
-                        UserSharedPreferences.getInstance(getApplicationContext()).saveUserInfo(userAccount);
+                    Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
+                    userAccount = dataSnapshot.getValue(User.class);
+                    Log.d( "email", dataSnapshot.getValue(User.class).getEmail());
+                    Log.d("email2", userAccount.getEmail());
+
+                    if(userAccount!= null)
+                    {
+                        username.setText(userAccount.getUsername());
+                        email.setText(userAccount.getEmail());
+                    }
+                    else
+                    {
+                        username.setText("Something went wrong");
+                        email.setText("user not found");
                     }
                 }
                 @Override
@@ -72,21 +87,6 @@ public class ProfileActivity extends AppCompatActivity
                 }
             });
 
-        username = findViewById(R.id.profile_username);
-        email = findViewById(R.id.profile_email);
-        chat = findViewById(R.id.chat_button);
-        logout = findViewById(R.id.log_out_button);
-
-        if(userAccount!= null)
-        {
-            username.setText(userAccount.getUsername());
-            email.setText(userAccount.getEmail());
-        }
-        else
-        {
-            username.setText("Something went wrong");
-            email.setText("user not found");
-        }
 
         chat.setOnClickListener(this);
         logout.setOnClickListener(this);

@@ -4,52 +4,57 @@ import java.sql.Timestamp;
 
 public class User
 {
-    private String uUsername;
-    private String uEmail;
-    private String uRank;
-    private Status uStatus;
+    private String username;
+    private String email;
+    private String rank;
+    //private Status uStatus;
 
+    public User()
+    {
+
+    }
     public User(String name, String inEmail, String inRank)
     {
-        uUsername = name;
-        uEmail = inEmail;
-        uRank = inRank;
-        uStatus = new Status(true, false);
+        username = name;
+        email = inEmail;
+        rank = inRank;
+        //uStatus = new Status(true, false);
     }
 
     public void setUsername(String inUsername)
     {
-        this.uUsername = inUsername;
+        this.username = inUsername;
     }
 
     public void setEmail(String inEmail)
     {
-        this.uEmail = inEmail;
+        this.email = inEmail;
     }
 
     public void setRank(String inputRank)
     {
-        uRank = inputRank;
+        this.rank = inputRank;
     }
 
+    /*
     public void setStatus(boolean online, boolean chatting, Timestamp timestamp) {
         uStatus.setIsOnline(online);
         uStatus.setIsChatting(chatting);
         uStatus.setTimestamp(timestamp);
-    }
+    }*/
 
     public String getUsername()
     {
-        return uUsername;
+        return username;
     }
 
     public String getEmail()
     {
-        return uEmail;
+        return email;
     }
 
     public String getRank()
     {
-        return uRank;
+        return rank;
     }
 }

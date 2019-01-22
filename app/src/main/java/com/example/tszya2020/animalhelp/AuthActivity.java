@@ -30,7 +30,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auth_activity);
 
@@ -77,37 +76,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void updateUI(FirebaseUser user)
     {
-        showProgressDialog();
+        ProgressDialog loadingWindow = ProgressDialogUtils.showProgressDialog(this, "loading");
         if (user != null)
         {
             Intent intent = new Intent(getApplicationContext(), profile.getClass());
             intent.putExtra(Constants.UID_KEY, user.getUid());
             startActivity(intent);
         }
-        else
-        {
-            Intent intent = new Intent(getApplicationContext(), auth.getClass());
-            startActivity(intent);
-        }
-    }
-
-    protected void showProgressDialog()
-    {
-        if (mProgressDialog == null)
-        {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loading));
-            mProgressDialog.setIndeterminate(true);
-        }
-
-        mProgressDialog.show();
-    }
-
-    protected void hideProgressDialog()
-    {
-        if (mProgressDialog != null && mProgressDialog.isShowing())
-        {
-            mProgressDialog.dismiss();
-        }
+        loadingWindow.dismiss();
     }
 }
