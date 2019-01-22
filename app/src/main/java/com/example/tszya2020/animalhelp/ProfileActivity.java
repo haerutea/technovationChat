@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,6 +60,8 @@ public class ProfileActivity extends AppCompatActivity
         userUid = getIntent().getStringExtra(Constants.UID_KEY);
         usersRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", usersRef.toString());
+        final TaskCompletionSource<String> source = new TaskCompletionSource<>();
+
         usersRef.addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
@@ -66,27 +71,31 @@ public class ProfileActivity extends AppCompatActivity
                     //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
                     Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
                     userAccount = dataSnapshot.getValue(User.class);
-                    Log.d( "email", dataSnapshot.getValue(User.class).getEmail());
-                    Log.d("email2", userAccount.getEmail());
-
-                    if(userAccount!= null)
-                    {
-                        username.setText(userAccount.getUsername());
-                        email.setText(userAccount.getEmail());
-                    }
-                    else
-                    {
-                        username.setText("Something went wrong");
-                        email.setText("user not found");
-                    }
+                    source.setResult(null);
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError)
                 {
+                    source.setException(databaseError.toException());
                     Log.d(logging, "onCancelled: " + databaseError.getMessage());
                 }
             });
 
+        source.getTask().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if(userAccount!= null)
+                {
+                    username.setText(userAccount.getUsername());
+                    email.setText(userAccount.getEmail());
+                }
+                else
+                {
+                    username.setText("username not found");
+                    email.setText("email not found");
+                }
+            }
+        });
 
         chat.setOnClickListener(this);
         logout.setOnClickListener(this);
