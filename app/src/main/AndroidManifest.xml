@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -43,8 +42,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
-        <!-- <activity android:name=".ChatFragment" /> -->
-        <activity android:name=".ProfileActivity"></activity>
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tszya2020.animalhelp.ProfileActivity" />
+        </activity>
+        <activity android:name=".ProfileActivity" />
     </application>
 
 </manifest>
