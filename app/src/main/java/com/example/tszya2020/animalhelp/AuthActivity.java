@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,20 +24,21 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     private SignUpActivity signUp;
     private LoginActivity login;
-    private AccountActivity profile;
+    private ProfileActivity profile;
     private AuthActivity auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        mAuth = FirebaseAuth.getInstance();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auth_activity);
 
+        mAuth = FirebaseAuth.getInstance();
+
         signUp = new SignUpActivity();
         login = new LoginActivity();
-        profile = new AccountActivity();
+        profile = new ProfileActivity(); //EL - Changed this to the correct activity
         auth = new AuthActivity();
 
         bSign_up = findViewById(R.id.button_to_sign_up);
@@ -52,10 +54,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null)
-        {
+        //if(currentUser != null) EL - removed this null check as it happens in updateUI
+            Log.d("userLog", "update UI started with user in onStart()");
             updateUI(currentUser);
-        }
+
     }
 
     public void onClick(View v)

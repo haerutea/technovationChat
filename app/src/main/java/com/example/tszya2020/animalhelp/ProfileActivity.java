@@ -28,7 +28,7 @@ public class ProfileActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private DatabaseReference usersRef;
     private User userAccount;
-    private String userPath = "users/";
+    private String userPath = "users";
     private String userUid;
     private String logging = "profileActivity";
 
@@ -41,18 +41,29 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     public final void onCreate(Bundle savedInstanceState)
     {
+        Log.d("screen", "profile created");
         setContentView(R.layout.profile_activity);
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+
+        //EL - There is no user in the Database at this point. It only lives in FirebaseAuth, not FirebaseDatabase,
+        // so if a user can't be found in the database, you would have to get the info from auth and save it in the database.
+        //The code bellow always returns null for the user since its never saved to the database.
 
         userUid = getIntent().getStringExtra(Constants.UID_KEY);
-        usersRef = FirebaseDatabase.getInstance().getReference().child(userPath).child(userUid);
+        usersRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
+        Log.d("userRef", usersRef.toString());
         usersRef.addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    userAccount = dataSnapshot.getValue(User.class);
-                    UserSharedPreferences.getInstance(getApplicationContext()).saveUserInfo(userAccount);
+                    //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
+                    for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                        userAccount = userSnapshot.getValue(User.class);
+                        Log.d("userChildren", userSnapshot.toString());
+                        UserSharedPreferences.getInstance(getApplicationContext()).saveUserInfo(userAccount);
+                    }
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError)
@@ -71,6 +82,11 @@ public class ProfileActivity extends AppCompatActivity
             username.setText(userAccount.getUsername());
             email.setText(userAccount.getEmail());
         }
+        else
+        {
+            username.setText("Something went wrong");
+            email.setText("user not found");
+        }
 
         chat.setOnClickListener(this);
         logout.setOnClickListener(this);
@@ -78,6 +94,7 @@ public class ProfileActivity extends AppCompatActivity
 
     public void onClick(View v)
     {
+        Log.d("user", "clicked on profile");
         int id = v.getId();
         if(id == chat.getId())
         {

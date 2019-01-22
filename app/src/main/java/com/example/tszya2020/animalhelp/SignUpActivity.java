@@ -202,7 +202,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     {
         ProgressDialogUtils.showProgressDialog(this, getString(R.string.loading));
         User newUser = new User(user.getDisplayName(), user.getEmail(), Constants.DEFAULT);
-        FirebaseDatabase.getInstance().getReference().child("user/" + user.getUid()).setValue(newUser);
+        FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH + user.getUid()).setValue(newUser);
 
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
         intent.putExtra(Constants.UID_KEY, user.getUid());

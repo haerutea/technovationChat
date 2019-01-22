@@ -139,12 +139,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 HashMap userMap = (HashMap) dataSnapshot.getValue();
-                String name = (String) userMap.get("name");
-                String email = (String) userMap.get("email");
-                String rank = (String) userMap.get("rank");
-                User userPref = new User(name, email, rank);
-                UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
+
+                if (userMap != null)
+                {
+                    String name = (String) userMap.get("name");
+                    String email = (String) userMap.get("email");
+                    String rank = (String) userMap.get("rank");
+                    User userPref = new User(name, email, rank);
+                    UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
+                }
+
             }
 
             @Override

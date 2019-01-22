@@ -173,7 +173,7 @@ public class ChatFragment extends Fragment
         databaseReference.child(usersBranch).child(user1).push();
         databaseReference.child(usersBranch).child(user2).push();*/
 
-        final DatabaseReference usersTab = roomReference.child(usersBranch);
+        final DatabaseReference usersTab = roomReference.child(Constants.USER_PATH);
 
         usersTab.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -190,7 +190,10 @@ public class ChatFragment extends Fragment
                     }
                     else
                     {
-                        usersTab.child(user2).setValue(messageUserId);
+                        if (user2 != null)
+                        {
+                            usersTab.child(user2).setValue(messageUserId);
+                        }
                     }
                 }
             }
@@ -224,33 +227,33 @@ public class ChatFragment extends Fragment
         });
 
         roomReference = FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString());
-        chatsRef = roomReference.child(chatChild);
-        chatsRef.addValueEventListener(new ValueEventListener()
+        if (chatChild != null)
         {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                Log.d(loggingName,"Success");
+            chatsRef = roomReference.child(chatChild);
 
-                adapter.clearContent();
+            chatsRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(loggingName, "Success");
 
-                //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
-                for(DataSnapshot item : dataSnapshot.getChildren())
-                {
-                    //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
-                    ChatMessage data = item.getValue(ChatMessage.class);
-                    adapter.addChat(data);
+                    adapter.clearContent();
+
+                    //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
+                    for (DataSnapshot item : dataSnapshot.getChildren()) {
+                        //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
+                        ChatMessage data = item.getValue(ChatMessage.class);
+                        adapter.addChat(data);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                Log.e(loggingName,"Failed. Error: " + databaseError.getMessage());
-                Toast.makeText(getContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(loggingName, "Failed. Error: " + databaseError.getMessage());
+                    Toast.makeText(getContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     /* getting rid of send_button

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1010090222350-t7qaemhrhh0m1soka95ivuvolfnga6pt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tszya2020.animalhelp",
+            "certificate_hash": "c4358577e960d2aae6233118087703febf83727f"
+          }
+        },
+        {
           "client_id": "1010090222350-evjtunqb5gbduge6p8dvbc4s4n3hqhsg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1010090222350-evjtunqb5gbduge6p8dvbc4s4n3hqhsg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -2,10 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tszya2020.animalhelp">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- To auto-complete the uEmail text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
 
     <application
         android:allowBackup="true"
@@ -40,7 +43,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
-        <activity android:name=".ChatFragment" />
+        <!-- <activity android:name=".ChatFragment" /> -->
         <activity android:name=".ProfileActivity"></activity>
     </application>
 
