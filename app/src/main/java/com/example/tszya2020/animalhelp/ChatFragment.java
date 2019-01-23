@@ -75,7 +75,7 @@ public class ChatFragment extends Fragment
         /*
         setupConnection();
         setupChat();*/
-        adapter = new ChatAdapter();
+        adapter = new ChatAdapter(new Chat("hi", "lol", "ok", "bye"));
     }
 
 
@@ -133,7 +133,7 @@ public class ChatFragment extends Fragment
 
         if(!messageInput.getText().toString().isEmpty())
         {
-            ChatMessage message = new ChatMessage(messageUserId,
+            Message message = new Message(messageUserId,
                     messageUsername, messageInput.getText().toString());
 
             chatsRef.child(String.valueOf(new Date().getTime())).setValue(message);
@@ -241,7 +241,7 @@ public class ChatFragment extends Fragment
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
                         //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
-                        ChatMessage data = item.getValue(ChatMessage.class);
+                        Message data = item.getValue(Message.class);
                         adapter.addChat(data);
                     }
                     adapter.notifyDataSetChanged();
@@ -259,7 +259,7 @@ public class ChatFragment extends Fragment
     /* getting rid of send_button
     public void onClick(View view)
     {
-        ChatMessage chatMessage = new ChatMessage(messageUserId,
+        Message chatMessage = new Message(messageUserId,
                 messageUsername, messageInput.getText().toString());
         databaseReference.child("messages").push().setValue(chatMessage);
         messageInput.setText("");

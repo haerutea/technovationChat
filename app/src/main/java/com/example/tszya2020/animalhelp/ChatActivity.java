@@ -1,42 +1,32 @@
 package com.example.tszya2020.animalhelp;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Date;
-
 public class ChatActivity extends AppCompatActivity implements TextView.OnEditorActionListener
 {
-
-    private FirebaseUser user;
+    private final String USER_LOGGING_NAME = "UserCreation";
+    private final String LOGGING_NAME = "ChatFragmentDatabase";
     private DatabaseReference roomReference;
     private DatabaseReference chatsRef;
     private ChatAdapter adapter;
-    private FragmentChangeListener mCallback;
-
-    private final String userLoggingName = "UserCreation";
-    private final String loggingName = "ChatFragmentDatabase";
+    private DatabaseReference currentUserDBRef;
+    private DatabaseReference allUsersDBRef;
+    private DatabaseReference chatDBRef;
 
     //UI references
     //https://developer.android.com/reference/android/support/v7/widget/LinearLayoutManager
@@ -45,35 +35,73 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     private Button sendButton;
     private TextView chatRoomName;
 
-    private String messageUserId;
-    private String messageUsername;
-
-    private String usersBranch;
-    private String user1;
-    private String user2;
-    private String roomName;
-    private String chatChild;
-    private boolean newRoom;
-
-    private long count;
+    private String currentUid;
+    private User currentAccount;
+    private String opposingUid;
+    private User opposingUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activty);
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
+        Log.d("inChatActivity", "here");
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
-        messageUsername = user.getDisplayName();
-        messageUserId = user.getUid();
 
-        usersBranch = "users/";
+        currentUid = getIntent().getStringExtra(Constants.UID_KEY);
+        currentUserDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(currentUid);
+
+        currentUserDBRef.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
+                Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
+                currentAccount = dataSnapshot.getValue(User.class);
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+                Log.d(LOGGING_NAME, "onCancelled: " + databaseError.getMessage());
+            }
+        });
+
+//        allUsersDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH);
+//        final TaskCompletionSource<String> source = new TaskCompletionSource<>();
+//
+//        allUsersDBRef.addValueEventListener(new ValueEventListener()
+//        {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot)
+//            {
+//                for(DataSnapshot userSnapshot : dataSnapshot.getChildren())
+//                {
+//                    //currentAccount = dataSnapshot.getValue(User.class);
+//                    Log.d("userChildrenData", userSnapshot.getValue(User.class).toString());
+//                    User tempUser = userSnapshot.getValue(User.class);
+//                    if(tempUser.getOnline() && !tempUser.getChatting()) //if online but not chatting
+//                    {
+//                        opposingUser = tempUser;
+//                        opposingUid = opposingUser.getUid();
+//                        source.setResult(null);
+//                    }
+//                }
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError)
+//            {
+//                source.setException(databaseError.toException());
+//                Log.d(LOGGING_NAME, "onCancelled: " + databaseError.getMessage());
+//            }
+//        });
+
+
 
         /*
         setupConnection();
-        setupChat();*/
+        setupChat();
         adapter = new ChatAdapter();
 
         chatRoomName = findViewById(R.id.room_name);
@@ -85,7 +113,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
         RecyclerView chat = findViewById(R.id.chat_recycler_view);
         chat.setLayoutManager(linearLayoutManager);
-        chat.setAdapter(adapter);
+        chat.setAdapter(adapter);*/
     }
 
     //https://github.com/DeKoServidoni/FirebaseChatAndroid/blob/660ae1b823ad645c921dc4dd57febaa7420841d8/app/src/main/java/com/dekoservidoni/firebasechat/fragments/ChatFragment.java#L78
@@ -123,11 +151,12 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
         if(!messageInput.getText().toString().isEmpty())
         {
-            ChatMessage message = new ChatMessage(messageUserId,
+            /*
+            Message message = new Message(messageUserId,
                     messageUsername, messageInput.getText().toString());
 
             chatsRef.child(String.valueOf(new Date().getTime())).setValue(message);
-
+*/
             linearLayoutManager.scrollToPosition(adapter.getItemCount() - 1);
 
             messageInput.setText("");
@@ -143,78 +172,17 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                count = dataSnapshot.getChildrenCount();
-                Log.d(loggingName, "room number get success");
+                //count = dataSnapshot.getChildrenCount();
+                Log.d(LOGGING_NAME, "room number get success");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError)
             {
-                Log.e(loggingName, "room number get failed: " + databaseError.getMessage());
+                Log.e(LOGGING_NAME, "room number get failed: " + databaseError.getMessage());
             }
         });
-
-        count = count + 1;
-        roomName = "room_" + count;
-        chatRoomName.setText(roomName);
-        roomReference = FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString());
         /*
-        databaseReference.child(usersBranch).push();
-        databaseReference.child(usersBranch).child(user1).push();
-        databaseReference.child(usersBranch).child(user2).push();*/
-
-        final DatabaseReference usersTab = roomReference.child(Constants.USER_PATH);
-
-        usersTab.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                Log.d(userLoggingName, "Success");
-                for(DataSnapshot item : dataSnapshot.getChildren())
-                {
-                    if(item.getValue() == null)
-                    {
-                        usersTab.child(user1).setValue(messageUserId);
-                        return;
-                    }
-                    else
-                    {
-                        if (user2 != null)
-                        {
-                            usersTab.child(user2).setValue(messageUserId);
-                        }
-                    }
-                }
-            }
-            /*
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                Log.d(userLoggingName, "add child success");
-                if (dataSnapshot.getChildrenCount() == 0)
-                {
-                    usersTab.child(user1).push().setValue(user);
-                } else if (dataSnapshot.getChildrenCount() == 1)
-                {
-                    usersTab.child(user2).push().setValue(user);
-                } else {
-                    newRoom = true;
-                    count = count + 1;
-                    roomName = "room_" + count;
-                    chatRoomName.setText(roomName);
-                    FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString()).
-                            child(usersBranch).child(user1).push().setValue(user);
-                    //TODO: SEE THIS IF THIS WORKS? vvv
-                }
-            }
-            */
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                Log.d(userLoggingName, "Failed: " + databaseError.getMessage());
-            }
-        });
 
         roomReference = FirebaseDatabase.getInstance().getReference(chatRoomName.getText().toString());
         if (chatChild != null)
@@ -224,14 +192,14 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
             chatsRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d(loggingName, "Success");
+                    Log.d(LOGGING_NAME, "Success");
 
                     adapter.clearContent();
 
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#getChildren()
                     for (DataSnapshot item : dataSnapshot.getChildren()) {
                         //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot#getValue(java.lang.Class%3CT%3E)
-                        ChatMessage data = item.getValue(ChatMessage.class);
+                        Message data = item.getValue(Message.class);
                         adapter.addChat(data);
                     }
                     adapter.notifyDataSetChanged();
@@ -239,23 +207,22 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(loggingName, "Failed. Error: " + databaseError.getMessage());
+                    Log.e(LOGGING_NAME, "Failed. Error: " + databaseError.getMessage());
                     Toast.makeText(getApplicationContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
                 }
             });
-        }
+        }*/
     }
-
-    /* getting rid of send_button
+/*
+     //getting rid of send_button
     public void onClick(View view)
     {
-        ChatMessage chatMessage = new ChatMessage(messageUserId,
+        Message chatMessage = new Message(messageUserId,
                 messageUsername, messageInput.getText().toString());
         databaseReference.child("messages").push().setValue(chatMessage);
         messageInput.setText("");
         messageAnalytics.logEvent("message_sent", null);
     }*/
-
     @Override
     public void onBackPressed()
     {

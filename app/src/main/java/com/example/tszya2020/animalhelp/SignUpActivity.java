@@ -201,7 +201,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     protected void signUp(FirebaseUser user)
     {
         ProgressDialog loading = ProgressDialogUtils.showProgressDialog(this, getString(R.string.loading));
-        User newUser = new User(usernameField.getText().toString(), user.getEmail(),
+        User newUser = new User(user.getUid(), usernameField.getText().toString(), user.getEmail(),
                 Constants.DEFAULT, true, false);
         FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH)
                 .child(user.getUid()).setValue(newUser);

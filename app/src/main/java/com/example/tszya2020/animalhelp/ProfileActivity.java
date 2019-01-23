@@ -14,7 +14,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,13 +26,17 @@ public class ProfileActivity extends AppCompatActivity
 
     //changing from fragment to another: https://developer.android.com/training/basics/fragments/communicating
     private FragmentChangeListener mCallback;
+    private String logging = "profileActivity";
 
     private FirebaseAuth mAuth;
-    private DatabaseReference usersRef;
+    private DatabaseReference userRef;
+    private DatabaseReference allUsersDBRef;
+    private DatabaseReference chatDBRef;
+
     private User userAccount;
-    private String userPath = "users";
     private String userUid;
-    private String logging = "profileActivity";
+    private User opposingUser;
+    private Chat newChatlog;
 
     //UI references
     private TextView username;
@@ -58,21 +61,25 @@ public class ProfileActivity extends AppCompatActivity
         // so if a user can't be found in the database, you would have to get the info from auth and save it in the database.
         //The code bellow always returns null for the user since its never saved to the database.
         userUid = getIntent().getStringExtra(Constants.UID_KEY);
-        usersRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
-        Log.d("userRef", usersRef.toString());
+        userRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
+        Log.d("userRef", userRef.toString());
         final TaskCompletionSource<String> source = new TaskCompletionSource<>();
 
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener()
+        userRef.addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot)
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
-
-                    //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
-                    Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
-                    userAccount = dataSnapshot.getValue(User.class);
-                    source.setResult(null);
+                    if(dataSnapshot != null)
+                    {
+                        Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
+                        userAccount = dataSnapshot.getValue(User.class);
+                        userAccount.setOnline(true);
+                        source.setResult(null);
+                    }
                 }
+                    //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
+
                 @Override
                 public void onCancelled(DatabaseError databaseError)
                 {
@@ -91,8 +98,8 @@ public class ProfileActivity extends AppCompatActivity
                 }
                 else
                 {
-                    username.setText("username not found");
-                    email.setText("email not found");
+                    Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -101,13 +108,65 @@ public class ProfileActivity extends AppCompatActivity
         logout.setOnClickListener(this);
     }
 
+    protected void findOpposingUser()
+    {
+        allUsersDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH);
+        final TaskCompletionSource<String> source = new TaskCompletionSource<>();
+
+        allUsersDBRef.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for(DataSnapshot userSnapshot : dataSnapshot.getChildren())
+                {
+                    //currentAccount = dataSnapshot.getValue(User.class);
+                    Log.d("userChildrenData", userSnapshot.getValue(User.class).toString());
+                    User tempUser = userSnapshot.getValue(User.class);
+                    if(tempUser.getOnline() && !tempUser.getChatting()) //if online but not chatting
+                    {
+                        opposingUser = tempUser;
+                        source.setResult(null);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+                source.setException(databaseError.toException());
+                Log.d("connecting to user", "onCancelled: " + databaseError.getMessage());
+            }
+        });
+
+        //when system gets opposing user to chat with
+        source.getTask().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                connectChat();
+            }
+        });
+
+    }
+
+    public void connectChat()
+    {
+        newChatlog = new Chat(userAccount.getUsername(), userAccount.getUid(),
+                opposingUser.getUsername(), opposingUser.getUid());
+        chatDBRef = FirebaseDatabase.getInstance().getReference()
+                .child(Constants.CHAT_PATH).child(userUid + opposingUser.getUid());
+        chatDBRef.setValue(newChatlog);
+        //start intent to activity
+    }
+
     public void onClick(View v)
     {
         Log.d("user", "clicked on profile");
         int id = v.getId();
         if(id == chat.getId())
         {
-            Intent intent = new Intent(getApplicationContext(), AccountActivity.class);
+            Log.d("toChatActivity", "thing");
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            intent.putExtra(Constants.UID_KEY, userUid);
             startActivity(intent);
         }
         else if(id == logout.getId())

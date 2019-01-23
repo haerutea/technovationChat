@@ -2,6 +2,7 @@ package com.example.tszya2020.animalhelp;
 
 import java.sql.Timestamp;
 
+//TODO: OBSOLETE?
 public class Status{
     private boolean isOnline;
     private boolean isChatting;

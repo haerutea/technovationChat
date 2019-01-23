@@ -26,18 +26,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         }
     }
 
-    private List<ChatMessage> messageContent;
+    private Chat userChatlog;
+    private List<Message> messageContent;
 
-    public ChatAdapter()
+    public ChatAdapter(Chat inputChatlog)
     {
-        messageContent = new ArrayList<ChatMessage>();
+        userChatlog = inputChatlog;
+        messageContent = userChatlog.getMessages();
     }
 
     public int getItemCount() {
         return messageContent.size();
     }
 
-    public void addChat(ChatMessage chat)
+    public void addChat(Message chat)
     {
         messageContent.add(chat);
     }
@@ -57,7 +59,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageHolder, int positionIndex) {
-        ChatMessage data = messageContent.get(positionIndex);
+        Message data = messageContent.get(positionIndex);
 
         messageHolder.username.setText(data.getSenderName());
         messageHolder.message.setText(data.getMessage());
