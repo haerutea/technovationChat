@@ -1,6 +1,9 @@
 package com.example.tszya2020.animalhelp;
 
-public class User
+import java.io.Serializable;
+
+//https://stackoverflow.com/a/2736612
+public class User implements Serializable
 {
     private String uid;
     private String username;
@@ -15,10 +18,10 @@ public class User
 
     }
 
-    public User(String inputUid, String name, String inEmail, String inRank, boolean online, boolean chatting)
+    public User(String inUid, String inName, String inEmail, String inRank, boolean online, boolean chatting)
     {
-        uid = inputUid;
-        username = name;
+        uid = inUid;
+        username = inName;
         email = inEmail;
         rank = inRank;
         onlineStatus = online;

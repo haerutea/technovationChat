@@ -17,15 +17,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     private FirebaseAuth mAuth;
 
-    private ProgressDialog mProgressDialog;
-
-    private Button bSign_up;
+    private Button bSignUp;
     private Button bLogin;
 
     private SignUpActivity signUp;
     private LoginActivity login;
     private ProfileActivity profile;
-    private AuthActivity auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,12 +35,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         signUp = new SignUpActivity();
         login = new LoginActivity();
         profile = new ProfileActivity(); //EL - Changed this to the correct activity
-        auth = new AuthActivity();
 
-        bSign_up = findViewById(R.id.button_to_sign_up);
+        bSignUp = findViewById(R.id.button_to_sign_up);
         bLogin = findViewById(R.id.button_to_login);
 
-        bSign_up.setOnClickListener(this);
+        bSignUp.setOnClickListener(this);
         bLogin.setOnClickListener(this);
     }
 
@@ -56,13 +52,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         //if(currentUser != null) EL - removed this null check as it happens in updateUI
             Log.d("userLog", "update UI started with user in onStart()");
             updateUI(currentUser);
-
     }
 
     public void onClick(View v)
     {
         int id = v.getId();
-        if (id == bSign_up.getId())
+        if (id == bSignUp.getId())
         {
             Intent intent = new Intent(getApplicationContext(), signUp.getClass());
             startActivity(intent);

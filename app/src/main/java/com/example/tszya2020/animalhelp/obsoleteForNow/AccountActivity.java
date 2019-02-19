@@ -1,10 +1,12 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.obsoleteForNow;
 
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.example.tszya2020.animalhelp.R;
 
 public class AccountActivity extends AppCompatActivity implements FragmentChangeListener {
 

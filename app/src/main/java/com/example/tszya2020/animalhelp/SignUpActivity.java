@@ -43,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordField;
     private EditText rePasswordField;
 
-    private Button bCreateAccount;
+    private Button bSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,8 +82,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         rePasswordField = findViewById(R.id.sign_up_re_password);
 
         // Buttons
-        bCreateAccount = findViewById(R.id.email_sign_up_button);
-        bCreateAccount.setOnClickListener(this);
+        bSignUp = findViewById(R.id.email_sign_up_button);
+        bSignUp.setOnClickListener(this);
     }
 
 
@@ -91,7 +91,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v)
     {
         int i = v.getId();
-        if (i == bCreateAccount.getId())
+        if (i == bSignUp.getId())
         {
             createAccount(emailField.getText().toString(), passwordField.getText().toString());
         }

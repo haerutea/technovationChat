@@ -144,12 +144,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 if (userMap != null)
                 {
+                    String uid = (String) userMap.get("uid");
                     String name = (String) userMap.get("name");
                     String email = (String) userMap.get("email");
                     String rank = (String) userMap.get("rank");
                     boolean online = (boolean) userMap.get("onlineStatus");
                     boolean chatting = (boolean) userMap.get("chattingStatus");
-                    User userPref = new User(name, email, rank, online, chatting);
+                    User userPref = new User(uid, name, email, rank, online, chatting);
                     UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
                 }
             }

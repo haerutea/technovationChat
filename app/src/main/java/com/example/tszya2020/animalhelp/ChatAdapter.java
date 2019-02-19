@@ -29,6 +29,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     private Chat userChatlog;
     private List<Message> messageContent;
 
+    public ChatAdapter()
+    {
+
+    }
+
     public ChatAdapter(Chat inputChatlog)
     {
         userChatlog = inputChatlog;

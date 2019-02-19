@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.obsoleteForNow;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -16,6 +16,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tszya2020.animalhelp.Chat;
+import com.example.tszya2020.animalhelp.ChatAdapter;
+import com.example.tszya2020.animalhelp.Constants;
+import com.example.tszya2020.animalhelp.Message;
+import com.example.tszya2020.animalhelp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

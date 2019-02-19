@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.obsoleteForNow;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.tszya2020.animalhelp.AuthActivity;
+import com.example.tszya2020.animalhelp.R;
+import com.example.tszya2020.animalhelp.obsoleteForNow.FragmentChangeListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
