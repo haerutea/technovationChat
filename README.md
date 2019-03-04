@@ -10,6 +10,7 @@ just press the green arrow to run, make sure config is app, like below:
 
 ![alt text](https://i.imgur.com/KBxB1ra.png)
 
+<h4><b>Note: Although min target SDK is 16, devices with API 27 or higher are highly recommended.</b></h4>
 </br>
 <h2>Description of Solution</h2>
 <h3>Overall goal</h3>
