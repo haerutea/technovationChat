@@ -15,8 +15,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
 {
     public static class MessageViewHolder extends RecyclerView.ViewHolder
     {
-        TextView username;
-        TextView message;
+        private TextView username;
+        private TextView message;
 
         public MessageViewHolder(View v)
         {

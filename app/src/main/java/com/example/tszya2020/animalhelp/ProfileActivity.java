@@ -2,7 +2,6 @@ package com.example.tszya2020.animalhelp;
 
 import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -11,13 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.tszya2020.animalhelp.obsoleteForNow.FragmentChangeListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,9 +25,6 @@ import com.google.firebase.database.ValueEventListener;
 public class ProfileActivity extends AppCompatActivity
         implements View.OnClickListener
 {
-
-    //changing from fragment to another: https://developer.android.com/training/basics/fragments/communicating
-    private FragmentChangeListener mCallback;
     private String logging = "profileActivity";
 
     private FirebaseAuth mAuth;
@@ -50,7 +45,7 @@ public class ProfileActivity extends AppCompatActivity
     private Button logout;
 
     @Override
-    public final void onCreate(Bundle savedInstanceState)
+    protected final void onCreate(Bundle savedInstanceState)
     {
         Log.d("screen", "profile created");
         setContentView(R.layout.profile_activity);
@@ -75,15 +70,12 @@ public class ProfileActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
-                    if(dataSnapshot != null)
-                    {
-                        Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
-                        userAccount = dataSnapshot.getValue(User.class);
-                        userAccount.setOnline(true);
-                        getUserSource.setResult(null);
-                    }
+                    Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
+                    userAccount = dataSnapshot.getValue(User.class);
+                    userAccount.setOnline(true);
+                    getUserSource.setResult(null);
+
                 }
-                    //EL-changed this so that dataSnapshot works correctly. datasnapshot.getChildren returns a list.
 
                 @Override
                 public void onCancelled(DatabaseError databaseError)
@@ -114,97 +106,19 @@ public class ProfileActivity extends AppCompatActivity
         logout.setOnClickListener(this);
     }
 
-    protected void findOpposingUser()
-    {
-        final ProgressDialog connecting = ProgressDialogUtils
-                .showProgressDialog(this, "Attempting to connect to chat");
-        allUsersDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH);
-        final TaskCompletionSource<String> getOpposingUserSource = new TaskCompletionSource<>();
-
-        allUsersDBRef.addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                for(DataSnapshot userSnapshot : dataSnapshot.getChildren())
-                {
-                    //currentAccount = dataSnapshot.getValue(User.class);
-                    Log.d("userChildrenData", userSnapshot.getValue(User.class).toString());
-                    User tempUser = userSnapshot.getValue(User.class);
-                    if(tempUser.getOnline() && !tempUser.getChatting()) //if online but not chatting
-                    {
-                        Log.d("opposingUser", "found");
-                        opposingUser = tempUser;
-                        getOpposingUserSource.setResult(null);
-                        break;
-                        //TODO: IF NO USERS ARE AVAILABLE
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-                getOpposingUserSource.setException(databaseError.toException());
-                Log.d("connecting to user", "onCancelled: " + databaseError.getMessage());
-            }
-        });
-
-        //when system gets opposing user to chat with
-        getOpposingUserSource.getTask().addOnCompleteListener(new OnCompleteListener<String>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<String> task)
-            {
-                connectChat();
-                connecting.dismiss();
-            }
-        });
-
-    }
-
-    public void connectChat()
-    {
-        newChatlog = new Chat(userAccount.getUsername(), userAccount.getUid(),
-                opposingUser.getUsername(), opposingUser.getUid());
-        bothUsersUid = userUid + opposingUser.getUid();
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.CHAT_PATH).addListenerForSingleValueEvent(new ValueEventListener()
-                {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        FirebaseDatabase.getInstance().getReference().child(Constants.CHAT_PATH)
-                                .child(bothUsersUid).setValue(newChatlog);
-                        Log.d("toChatActivity", "fromProfileActivity");
-                        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                        //https://stackoverflow.com/a/2736612
-                        intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
-                        //TODO: FIGURE OUT IF ALL THESE IS NEEDED vvv
-                        intent.putExtra(Constants.UID_KEY, userUid);
-                        intent.putExtra(Constants.OPPOSING_USER_KEY, opposingUser);
-                        intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUsersUid);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-                    }
-                });
-                //child(bothUsersUid);
-        //chatDBRef.setValue(newChatlog);
-    }
-
     public void onClick(View v)
     {
         Log.d("user", "clicked on profile");
         int id = v.getId();
         if(id == chat.getId())
         {
-            findOpposingUser();
+            Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
+            intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
+            startActivity(intent);
         }
         else if(id == logout.getId())
         {
+            userAccount.setOnline(false);
             mAuth.signOut();
             Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
             startActivity(intent);

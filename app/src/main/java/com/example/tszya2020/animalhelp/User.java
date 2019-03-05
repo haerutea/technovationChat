@@ -5,13 +5,13 @@ import java.io.Serializable;
 //https://stackoverflow.com/a/2736612
 public class User implements Serializable
 {
+    //TODO: ADD STATS?  EG. CHAT COUNT, RATING FOR RANKS
     private String uid;
     private String username;
     private String email;
     private String rank;
     private boolean onlineStatus;
     private boolean chattingStatus;
-    private Chat chatlog;
 
     public User()
     {
@@ -26,7 +26,6 @@ public class User implements Serializable
         rank = inRank;
         onlineStatus = online;
         chattingStatus = chatting;
-        chatlog = new Chat();
     }
 
     public void setUid(String inUid)
@@ -59,11 +58,6 @@ public class User implements Serializable
         this.chattingStatus = inputChatting;
     }
 
-    public void setChatlog(Chat inputChatlog)
-    {
-        this.chatlog = inputChatlog;
-    }
-
     public String getUid()
     {
         return uid;
@@ -92,10 +86,5 @@ public class User implements Serializable
     public boolean getChatting()
     {
         return chattingStatus;
-    }
-
-    public Chat getChatlog()
-    {
-        return chatlog;
     }
 }

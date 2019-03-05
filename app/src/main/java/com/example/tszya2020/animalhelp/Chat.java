@@ -4,23 +4,19 @@ import java.util.ArrayList;
 
 public class Chat
 {
-    private String mUserOneName;
-    private String mUserOneId;
-    private String mUserTwoName;
-    private String mUserTwoId;
+    private User userOne;
+    private User userTwo;
     private ArrayList<Message> messages;
 
     public Chat()
     {
     }
 
-    public Chat(String userOneName, String userOneId, String userTwoName, String userTwoId)
+    public Chat(User inUserOne, User inUserTwo)
     {
-        this.mUserOneName = userOneName;
-        this.mUserOneId = userOneId;
-        this.mUserTwoName = userTwoName;
-        this.mUserTwoId = userTwoId;
-        this.messages = new ArrayList<>();
+        userOne = inUserOne;
+        userTwo = inUserTwo;
+        messages = new ArrayList<>();
     }
 
     public void addMessage(Message inputMessage)
@@ -28,47 +24,28 @@ public class Chat
         messages.add(inputMessage);
     }
 
-    public void setUserOneId(String inputUserOneId)
+    public void setUserOne(User inputUserOne)
     {
-        this.mUserOneId = inputUserOneId;
+        this.userOne = inputUserOne;
     }
 
-    public void setUserOneName(String inputUserOneName)
+    public void setUserTwo(User inputUserTwo)
     {
-        this.mUserOneName = inputUserOneName;
-    }
-
-    public void setUserTwoId(String inputUserTwoId)
-    {
-        this.mUserTwoId = inputUserTwoId;
-    }
-
-    public void setUserTwoName(String inputUser2Name) {
-        this.mUserTwoName = inputUser2Name;
+        this.userTwo = inputUserTwo;
     }
 
     public ArrayList<Message> getMessages()
     {
         return messages;
     }
-    public String getUserOneId()
+
+    public User getUserOne()
     {
-        return mUserOneId;
+        return userOne;
     }
 
-    public String getUserOneName()
+    public User getUserTwo()
     {
-        return mUserOneName;
+        return userTwo;
     }
-
-    public String getUserTwoId()
-    {
-        return mUserTwoId;
-    }
-
-    public String getUserTwoName()
-    {
-        return mUserTwoName;
-    }
-
 }

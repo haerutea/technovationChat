@@ -23,12 +23,12 @@ import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity implements TextView.OnEditorActionListener
 {
+    //TODO: ADD SAVE CHAT FEATURE
     private final String USER_LOGGING_NAME = "UserCreation";
     private final String LOGGING_NAME = "ChatFragmentDatabase";
     private DatabaseReference roomReference;
     private DatabaseReference chatsRef;
     private ChatAdapter adapter;
-    private Chat newChatLog;
     private DatabaseReference currentUserDBRef;
     private DatabaseReference allUsersDBRef;
     private DatabaseReference chatDBRef;
@@ -59,12 +59,10 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         userAccount = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER_KEY);
         opposingUser = (User) getIntent().getSerializableExtra(Constants.OPPOSING_USER_KEY);
         chatRoomId = getIntent().getStringExtra(Constants.CHAT_ROOM_ID_KEY);
-        //currentUserDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH).child(userUid);
 
         setupConnection();
 
-        newChatLog = new Chat(userAccount.getUsername(), userUid,
-                opposingUser.getUsername(), opposingUser.getUid());
+        Chat newChatLog = new Chat(userAccount, opposingUser);
         adapter = new ChatAdapter(newChatLog);
 
         chatRoomName = findViewById(R.id.room_name);
@@ -111,7 +109,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
                 Log.e(LOGGING_NAME, "room number get failed: " + databaseError.getMessage());
             }
         });
-/*
+
         roomReference = FirebaseDatabase.getInstance().getReference(chatRoomId);
 
             roomReference.addValueEventListener(new ValueEventListener() {
@@ -134,7 +132,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
                     Log.e(LOGGING_NAME, "Failed. Error: " + databaseError.getMessage());
                     Toast.makeText(getApplicationContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
                 }
-            });*/
+            });
         }
 /*
      //getting rid of send_button
@@ -146,6 +144,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         messageInput.setText("");
         messageAnalytics.logEvent("message_sent", null);
     }*/
+
     @Override
     public void onBackPressed()
     {
@@ -155,4 +154,3 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         startActivity(intent);
     }
 }
-
