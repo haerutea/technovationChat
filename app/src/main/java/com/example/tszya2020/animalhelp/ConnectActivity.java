@@ -87,8 +87,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 android.R.layout.simple_spinner_item, categoryGroups);
 
         contentArrAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ageDropdown.setAdapter(contentArrAdapter);
-        ageDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        contentDropdown.setAdapter(contentArrAdapter);
+        contentDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
@@ -135,13 +135,13 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         opposingUser = tempUser;
                         getOpposingUserSource.setResult(null);
                         break;
-                        //TODO: IF NO USERS ARE AVAILABLE
                     }
                 }
                 if(!found)
                 {
                     Log.d("opposingUser", "not found");
                     connecting.dismiss();
+
                     Toast.makeText(ConnectActivity.this, "Matching failed, no users available",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -168,7 +168,15 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    public void connectChat()
+    private boolean confirmStatus()
+    {
+        String title = "Request to chat";
+        String content = userAccount.getUsername() + "found you to be a good match to chat with.";
+        NotificationSender.setNotif(this, ConfirmActivity.class, title, content, true);
+        return true;
+    }
+
+    private void connectChat()
     {
 
         bothUsersUid = userUid + opposingUser.getUid();
