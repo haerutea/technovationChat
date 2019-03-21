@@ -16,8 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".AuthActivity"
+        <activity
+            android:name=".AuthActivity"
             android:label="@string/title_activity_auth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -34,7 +33,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
-
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
@@ -43,17 +41,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.AuthActivity" />
         </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile" />
 
-        <activity android:name=".ProfileActivity"
-            android:label="@string/title_activity_profile"/>
-
-        <activity android:name=".ConnectActivity"
+        <activity
+            android:name=".ConnectActivity"
             android:label="@string/title_activity_connect">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tszya2020.animalhelp.ProfileActivity" />
         </activity>
-
         <activity
             android:name=".ChatActivity"
             android:label="@string/title_activity_chat"
@@ -63,6 +61,12 @@
                 android:value="com.example.tszya2020.animalhelp.ProfileActivity" />
         </activity>
 
+        <!-- https://developer.android.com/training/notify-user/navigation.html#ExtendedNotification -->
+        <activity
+            android:name=".ConfirmActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""></activity>
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>
