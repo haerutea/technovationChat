@@ -10,6 +10,7 @@ public class User implements Serializable
     private String username;
     private String email;
     private String rank;
+    private String token;
     private boolean onlineStatus;
     private boolean chattingStatus;
 
@@ -18,16 +19,18 @@ public class User implements Serializable
 
     }
 
-    public User(String inUid, String inName, String inEmail, String inRank, boolean online, boolean chatting)
+    public User(String inUid, String inName, String inEmail, String inRank, String inToken, boolean online, boolean chatting)
     {
         uid = inUid;
         username = inName;
         email = inEmail;
         rank = inRank;
+        token = inToken;
         onlineStatus = online;
         chattingStatus = chatting;
     }
 
+    //TODO: IS ALL THIS NECCESARY IF THERE'S USERSHAREDPREF
     public void setUid(String inUid)
     {
         this.uid = inUid;
@@ -46,6 +49,11 @@ public class User implements Serializable
     public void setRank(String inputRank)
     {
         this.rank = inputRank;
+    }
+
+    public void setToken(String token)
+    {
+        this.token = token;
     }
 
     public void setOnline(boolean inputOnline)
@@ -76,6 +84,11 @@ public class User implements Serializable
     public String getRank()
     {
         return rank;
+    }
+
+    public String getToken()
+    {
+        return token;
     }
 
     public boolean getOnline()
