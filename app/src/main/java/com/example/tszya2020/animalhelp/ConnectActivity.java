@@ -22,19 +22,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class ConnectActivity extends AppCompatActivity implements View.OnClickListener
 {
 
     //variables
     private User userAccount;
-    private String userUid;
     private User opposingUser;
     private Chat newChatlog;
     private String bothUsersUid;
     private String selectedAgeGroup;
     private String selectedCategory;
+    private ArrayList<String> setPreferences;
     private DatabaseReference allUsersDBRef;
-    private DatabaseReference chatDBRef;
 
     //dropdown menu choices, these categories are referenced off 7Cups' list
     private final String[] targetAgeGroups =
@@ -101,13 +102,17 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             {
             }
         });
+
+        setPreferences = new ArrayList<String>();
     }
 
     private void findOpposingUser()
     {
-        final ProgressDialog connecting = ProgressDialogUtils
+        setPreferences.add(selectedAgeGroup);
+        setPreferences.add(selectedCategory);
+        final ProgressDialog connecting = DialogUtils
                 .showProgressDialog(this, "Attempting to connect to chat");
-        allUsersDBRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH);
+        allUsersDBRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH);
         final TaskCompletionSource<String> getOpposingUserSource = new TaskCompletionSource<>();
 
         allUsersDBRef.addListenerForSingleValueEvent(new ValueEventListener()
@@ -118,7 +123,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 boolean found = false;
                 for(DataSnapshot userSnapshot : dataSnapshot.getChildren())
                 {
-                    //currentAccount = dataSnapshot.getValue(User.class);
                     Log.d("userChildrenData", userSnapshot.getValue(User.class).toString());
                     User tempUser = userSnapshot.getValue(User.class);
                     Log.d("tempUserCurrent", userAccount.getEmail());
@@ -133,6 +137,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         found = true;
                         Log.d("opposingUser", "found");
                         opposingUser = tempUser;
+                        Request chatRequest = new Request(userAccount.getUid(), userAccount.getUsername(), setPreferences);
+                        //add request to database with opposing user's UID as path name
+                        Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
+                                .child(opposingUser.getUid()).setValue(chatRequest);
                         getOpposingUserSource.setResult(null);
                         break;
                     }
@@ -161,27 +169,18 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             public void onComplete(@NonNull Task<String> task)
             {
                 Log.d("connect", " to chat database");
-                connectChat();
+                //connectChat();
                 connecting.dismiss();
             }
         });
 
     }
 
-    private boolean confirmStatus()
-    {
-        String title = "Request to chat";
-        String content = userAccount.getUsername() + "found you to be a good match to chat with.";
-        NotificationSender.setNotif(this, ConfirmActivity.class, title, content, true);
-        return true;
-    }
-
     private void connectChat()
     {
-
-        bothUsersUid = userUid + opposingUser.getUid();
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.CHAT_PATH).addListenerForSingleValueEvent(new ValueEventListener()
+        bothUsersUid = userAccount.getUid() + opposingUser.getUid();
+        Constants.BASE_INSTANCE.child(Constants.CHAT_PATH)
+                .addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
@@ -194,7 +193,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 //https://stackoverflow.com/a/2736612
                 intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
                 //TODO: FIGURE OUT IF ALL THESE IS NEEDED vvv
-                intent.putExtra(Constants.UID_KEY, userUid);
+                intent.putExtra(Constants.UID_KEY, userAccount.getUid());
                 intent.putExtra(Constants.OPPOSING_USER_KEY, opposingUser);
                 intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUsersUid);
                 startActivity(intent);
@@ -207,6 +206,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    @Override
     public void onClick(View v)
     {
         int id = v.getId();
