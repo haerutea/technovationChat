@@ -1,6 +1,5 @@
 package com.example.tszya2020.animalhelp;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 
