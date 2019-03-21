@@ -1,5 +1,6 @@
 package com.example.tszya2020.animalhelp;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -32,13 +35,21 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         signUp = new SignUpActivity();
         login = new LoginActivity();
-        profile = new ProfileActivity(); //EL - Changed this to the correct activity
+        profile = new ProfileActivity();
 
         bSignUp = findViewById(R.id.button_to_sign_up);
         bLogin = findViewById(R.id.button_to_login);
 
         bSignUp.setOnClickListener(this);
         bLogin.setOnClickListener(this);
+
+        GoogleApiAvailability gPlayStatus = GoogleApiAvailability.getInstance();
+        int result = gPlayStatus.isGooglePlayServicesAvailable(this);
+        if(result != ConnectionResult.SUCCESS)
+        {
+            Dialog errDialog = gPlayStatus.getErrorDialog(this, result, 1);
+            errDialog.show();
+        }
     }
 
     @Override
@@ -69,7 +80,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void updateUI(FirebaseUser user)
     {
-        ProgressDialog loadingWindow = ProgressDialogUtils.showProgressDialog(this, "loading");
+        ProgressDialog loadingWindow = DialogUtils.showProgressDialog(this, "loading");
         if (user != null)
         {
             Intent intent = new Intent(getApplicationContext(), profile.getClass());
