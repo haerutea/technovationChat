@@ -204,6 +204,25 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Email sent.");
                             //check if it's verified yet
+                            do
+                            {
+                                mUser.reload().addOnCompleteListener(new OnCompleteListener<Void>()
+                                {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            if(mUser.isEmailVerified())
+                                            {
+                                                Log.d(TAG, ""+mUser.isEmailVerified());
+                                                verifyDialog.dismiss();
+                                                signUp();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            while(!mUser.isEmailVerified());
                         }
                     }
                 });
@@ -219,27 +238,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     public void onClick(DialogInterface dialog, int which) {
                         sendEmail();
                     }
-                }).setNeutralButton(R.string.proceed, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mUser.reload().addOnCompleteListener(new OnCompleteListener<Void>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                        {
-                            Log.d(TAG, "no");
-                            if(mUser.isEmailVerified())
-                            {
-                                Log.d(TAG, ""+mUser.isEmailVerified());
-                                verifyDialog.dismiss();
-                                signUp();
-                            }
-                        }
-                    }
                 });
-            }
-        });
         verifyDialog = verifyEmail.create();
         verifyDialog.show();
         //matakeci@globaleuro.net
