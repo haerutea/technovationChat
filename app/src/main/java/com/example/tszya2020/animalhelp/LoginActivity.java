@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText emailField;
     private EditText passwordField;
-
+    private Button bForgot;
     private Button bLogIn;
 
 
@@ -54,17 +54,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
-
+        bForgot = findViewById(R.id.forgot_password_button);
         bLogIn = findViewById(R.id.email_sign_in_button);
+        bForgot.setOnClickListener(this);
         bLogIn.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int i = v.getId();
-        if (i == R.id.email_sign_in_button) {
-            signIn(emailField.getText().toString(), passwordField.getText().toString());
-        }
     }
 
     private void signIn(String email, String password) {
@@ -72,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (!formFilled()) {
             return;
         }
-        ProgressDialog loading = ProgressDialogUtils
+        ProgressDialog loading = DialogUtils
                 .showProgressDialog(this, getString(R.string.loading));
 
         // [START sign_in_with_email]
@@ -110,6 +103,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
         loading.dismiss();
     }
+
     private boolean formFilled() {
         boolean valid = true;
 
@@ -132,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return valid;
     }
 
-    protected void logIn(FirebaseUser user)
+    protected void logIn(final FirebaseUser user)
     {
         FirebaseDatabase.getInstance().getReference().child("user").child(user.getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener()
@@ -144,13 +138,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 if (userMap != null)
                 {
-                    String uid = (String) userMap.get("uid");
-                    String name = (String) userMap.get("name");
-                    String email = (String) userMap.get("email");
-                    String rank = (String) userMap.get("rank");
-                    boolean online = (boolean) userMap.get("onlineStatus");
-                    boolean chatting = (boolean) userMap.get("chattingStatus");
-                    User userPref = new User(uid, name, email, rank, online, chatting);
+                    String uid = (String) userMap.get(Constants.UID_KEY);
+                    String name = (String) userMap.get(Constants.USERNAME_KEY);
+                    String email = (String) userMap.get(Constants.EMAIL_KEY);
+                    String rank = (String) userMap.get(Constants.RANK_KEY);
+                    String token = (String) userMap.get(Constants.TOKEN_KEY);
+                    boolean online = (boolean) userMap.get(Constants.ONLINE_KEY);
+                    boolean chatting = (boolean) userMap.get(Constants.CHATTING_KEY);
+                    User userPref = new User(uid, name, email, rank, token, online, chatting);
                     UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
                 }
             }
@@ -164,5 +159,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
         intent.putExtra(Constants.UID_KEY, user.getUid());
         startActivity(intent);
+    }
+
+    private void forgotPassword()
+    {
+        ForgotPasswordFragment forgotFrag = ForgotPasswordFragment.newInstance();
+        forgotFrag.show(this.getSupportFragmentManager(), "forgotPasswordFrag");
+    }
+    @Override
+    public void onClick(View v)
+    {
+        int i = v.getId();
+        if(i == bForgot.getId())
+        {
+            forgotPassword();
+        }
+        else if (i == bLogIn.getId())
+        {
+            signIn(emailField.getText().toString(), passwordField.getText().toString());
+        }
     }
 }
