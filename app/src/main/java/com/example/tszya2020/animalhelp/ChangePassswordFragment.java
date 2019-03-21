@@ -1,19 +1,16 @@
 package com.example.tszya2020.animalhelp;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,12 +58,12 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View baseView =  inflater.inflate(R.layout.password_fragment, container, false);
+        View baseView =  inflater.inflate(R.layout.change_password_fragment, container, false);
         newPass = baseView.findViewById(R.id.new_password);
         reNewPass = baseView.findViewById(R.id.re_new_password);
         currentPass = baseView.findViewById(R.id.current_password);
-        confirm = baseView.findViewById(R.id.confirm_button);
-        cancel = baseView.findViewById(R.id.cancel_button);
+        confirm = baseView.findViewById(R.id.change_confirm_button);
+        cancel = baseView.findViewById(R.id.change_cancel_button);
         confirm.setOnClickListener(this);
         cancel.setOnClickListener(this);
         return baseView;
@@ -117,7 +114,7 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         //otherwise
         if(formFilled())
         {
-            final ProgressDialog loading = DialogUtils
+            ProgressDialog loading = DialogUtils
                     .showProgressDialog(getActivity(), "Attempting to update password...");
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             user.updatePassword(password)
@@ -129,7 +126,6 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                             if (task.isSuccessful())
                             {
                                 Log.d(LOG_TAG, "User password updated.");
-                                loading.dismiss();
                                 dismiss();
                                 Toast.makeText(getActivity(), "update password success", Toast.LENGTH_LONG).show();
                             }
@@ -144,7 +140,6 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                                 catch (FirebaseAuthRecentLoginRequiredException e)
                                 {
                                     reauthenticateAndChange();
-                                    loading.dismiss();
                                 }
                                 catch (Exception e)
                                 {
@@ -153,6 +148,7 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                             }
                         }
                     });
+            loading.dismiss();
         }
     }
 
@@ -198,6 +194,10 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         int id = v.getId();
         if(id == confirm.getId())
         {
+            //https://stackoverflow.com/questions/37209157/hide-keyboard-when-button-click-fragment
+            //hide keyboard
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             confirmChange();
         }
         else if(id == cancel.getId())
