@@ -42,7 +42,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private FirebaseAuth.AuthStateListener authListener;
-    private boolean verified;
     private AlertDialog verifyDialog;
 
     // UI references.
@@ -92,8 +91,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         // Buttons
         bSignUp = findViewById(R.id.email_sign_up_button);
         bSignUp.setOnClickListener(this);
-
-        verified = false;
     }
 
 
@@ -129,7 +126,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             loading.dismiss();
                             //send email verification
                             //https://firebase.google.com/docs/auth/android/manage-users
-                            checkVerification();
+                            signUp();
                         }
                         else
                         {
@@ -204,73 +201,21 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Email sent.");
                             //check if it's verified yet
-                            do
-                            {
-                                mUser.reload().addOnCompleteListener(new OnCompleteListener<Void>()
-                                {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful())
-                                        {
-                                            if(mUser.isEmailVerified())
-                                            {
-                                                Log.d(TAG, ""+mUser.isEmailVerified());
-                                                verifyDialog.dismiss();
-                                                signUp();
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                            while(!mUser.isEmailVerified());
+                            signUp();
                         }
                     }
                 });
     }
 
-    private void checkVerification()
-    {
-        sendEmail();
-        AlertDialog.Builder verifyEmail = new AlertDialog.Builder(this);
-        verifyEmail.setMessage(R.string.verify_email)
-                .setPositiveButton(R.string.resend_email, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendEmail();
-                    }
-                });
-        verifyDialog = verifyEmail.create();
-        verifyDialog.show();
-        //matakeci@globaleuro.net
-    }
-
-    private void reloadStatus()
-    {
-        if(mUser != null)
-        {
-            Task verifyTask = mUser.reload();
-            verifyTask.addOnSuccessListener(new OnSuccessListener() {
-                @Override
-                public void onSuccess(Object o) {
-                    verified = mUser.isEmailVerified();
-                    Log.d(TAG, "verified:" + verified);
-                    if(verified)
-                    {
-                        verifyDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
-
     private void signUp()
     {
-        Log.d(TAG, "email is verified.");
         final TaskCompletionSource<String> getNotifToken = new TaskCompletionSource<>();
         FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+                {
                     @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    public void onComplete(@NonNull Task<InstanceIdResult> task)
+                    {
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "getInstanceId failed", task.getException());
                             return;
@@ -284,9 +229,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         getNotifToken.setResult(null);
                     }
                 });
-        getNotifToken.getTask().addOnCompleteListener(new OnCompleteListener<String>() {
+        getNotifToken.getTask().addOnCompleteListener(new OnCompleteListener<String>()
+        {
             @Override
-            public void onComplete(@NonNull Task<String> task) {
+            public void onComplete(@NonNull Task<String> task)
+            {
                 User newUser = new User(mUser.getUid(), usernameField.getText().toString(), mUser.getEmail(),
                         Constants.DEFAULT, Constants.notifToken, true, false);
                 FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH)
@@ -301,7 +248,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     //https://stackoverflow.com/questions/41105826/change-displayname-in-firebase/43680527#43680527
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
         mAuth.addAuthStateListener(authListener);
         //https://stackoverflow.com/a/45306528
@@ -309,9 +257,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop()
+    {
         super.onStop();
-        if (authListener != null) {
+        if (authListener != null)
+        {
             mAuth.removeAuthStateListener(authListener);
         }
     }
