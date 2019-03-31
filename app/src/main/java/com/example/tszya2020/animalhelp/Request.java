@@ -1,14 +1,14 @@
 package com.example.tszya2020.animalhelp;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Request
 {
     private String uid;
     private String username;
-    private ArrayList<String> preferences;
+    private HashMap<String, String> preferences;
 
-    public Request(String inUid, String inUsername, ArrayList<String> inPreferences)
+    public Request(String inUid, String inUsername, HashMap<String, String> inPreferences)
     {
         uid = inUid;
         username = inUsername;
@@ -25,7 +25,7 @@ public class Request
         return username;
     }
 
-    public ArrayList<String> getPreferences()
+    public HashMap<String, String> getPreferences()
     {
         return preferences;
     }
