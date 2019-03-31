@@ -1,8 +1,6 @@
 package com.example.tszya2020.animalhelp;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -16,9 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -29,38 +25,41 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import java.util.ArrayList;
+
 /**
- * A login screen that offers login via uEmail/password.
+ * A login screen that offers login via email and password.
  */
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener
 {
 
 
     //https://stackoverflow.com/questions/37886301/tag-has-private-access-in-android-support-v4-app-fragmentactivity
-    private static final String TAG = "SignUp";
+    private static final String LOG_TAG = "SignUp";
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private FirebaseAuth.AuthStateListener authListener;
-    private AlertDialog verifyDialog;
+    private ArrayList<String> checkedStrengths;
 
     // UI references.
     private EditText usernameField;
     private EditText emailField;
     private EditText passwordField;
     private EditText rePasswordField;
-
     private Button bSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up_activity);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        checkedStrengths = (ArrayList<String>) getIntent().getSerializableExtra(Constants.CHECKED_STRENGTHS_KEY);
+        Log.d("checked:", checkedStrengths.toString());
+
         //https://stackoverflow.com/questions/41105826/change-displayname-in-firebase/43680527#43680527
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -82,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         };
-        // Set up the login form.
+
         usernameField = findViewById(R.id.sign_up_username);
         emailField = findViewById(R.id.sign_up_email);
         passwordField = findViewById(R.id.sign_up_password);
@@ -107,7 +106,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void createAccount(String email, String password)
     {
         final ProgressDialog loading = DialogUtils.showProgressDialog(this, getString(R.string.loading));
-        Log.d(TAG, "createAccount:" + email);
+        Log.d(LOG_TAG, "createAccount:" + email);
         if (!formFilled())
         {
             return;
@@ -121,10 +120,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful())
                         {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
+                            Log.d(LOG_TAG, "createUserWithEmail:success");
                             mUser = mAuth.getCurrentUser();
-                            loading.dismiss();
                             //send email verification
+                            sendEmail();
                             //https://firebase.google.com/docs/auth/android/manage-users
                             signUp();
                         }
@@ -145,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             }
                             catch (Exception e)
                             {
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                Log.w(LOG_TAG, "createUserWithEmail:failure", task.getException());
                             }
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignUpActivity.this, "Authentication failed.  " + errorMsg,
@@ -199,9 +198,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "Email sent.");
-                            //check if it's verified yet
-                            signUp();
+                            Log.d(LOG_TAG, "Email sent.");
                         }
                     }
                 });
@@ -209,40 +206,30 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private void signUp()
     {
-        final TaskCompletionSource<String> getNotifToken = new TaskCompletionSource<>();
+        //change FirebaseUser displayName field
+        User newUser = new User(mUser.getUid(), usernameField.getText().toString(), mUser.getEmail(), checkedStrengths, true, false);
+        FirebaseDatabase.getInstance().getReference()
+                .child(Constants.USER_PATH).child(mUser.getUid()).setValue(newUser);
+        UserSharedPreferences.getInstance(SignUpActivity.this).setInfo(Constants.UID_KEY, mUser.getUid());
+        //https://firebase.google.com/docs/cloud-messaging/android/client?authuser=0
         FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
-                {
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task)
-                    {
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            Log.w(LOG_TAG, "getInstanceId failed", task.getException());
                             return;
                         }
 
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
-
-                        // Log and toast
-                        Constants.notifToken = token;
-                        getNotifToken.setResult(null);
+                        Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(mUser.getUid()).
+                                child(Constants.TOKEN_KEY).child(token).setValue(true);
+                        UserSharedPreferences.getInstance(SignUpActivity.this).setInfo(Constants.TOKEN_KEY, token);
                     }
                 });
-        getNotifToken.getTask().addOnCompleteListener(new OnCompleteListener<String>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<String> task)
-            {
-                User newUser = new User(mUser.getUid(), usernameField.getText().toString(), mUser.getEmail(),
-                        Constants.DEFAULT, Constants.notifToken, true, false);
-                FirebaseDatabase.getInstance().getReference().child(Constants.USER_PATH)
-                        .child(mUser.getUid()).setValue(newUser);
-            }
-        });
 
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
-        intent.putExtra(Constants.UID_KEY, mUser.getUid());
         startActivity(intent);
     }
 
@@ -252,8 +239,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     {
         super.onResume();
         mAuth.addAuthStateListener(authListener);
-        //https://stackoverflow.com/a/45306528
-        //reloadStatus();
     }
 
     @Override
