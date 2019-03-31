@@ -24,8 +24,7 @@ import java.util.Date;
 public class ChatActivity extends AppCompatActivity implements TextView.OnEditorActionListener
 {
     //TODO: ADD SAVE CHAT FEATURE
-    private final String USER_LOGGING_NAME = "UserCreation";
-    private final String LOGGING_NAME = "ChatFragmentDatabase";
+    private final String LOG_TAG = "ChatFragmentDatabase";
     private DatabaseReference roomReference;
     private DatabaseReference chatsRef;
     private ChatAdapter adapter;
@@ -50,7 +49,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat_activty);
+        setContentView(R.layout.chat_activity);
         Log.d("inChatActivity", "here");
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
@@ -100,13 +99,13 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                Log.d(LOGGING_NAME, "room number get success");
+                Log.d(LOG_TAG, "room number get success");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError)
             {
-                Log.e(LOGGING_NAME, "room number get failed: " + databaseError.getMessage());
+                Log.e(LOG_TAG, "room number get failed: " + databaseError.getMessage());
             }
         });
 
@@ -115,7 +114,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
             roomReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d(LOGGING_NAME, "Success");
+                    Log.d(LOG_TAG, "Success");
 
                     adapter.clearContent();
 
@@ -129,7 +128,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(LOGGING_NAME, "Failed. Error: " + databaseError.getMessage());
+                    Log.e(LOG_TAG, "Failed. Error: " + databaseError.getMessage());
                     Toast.makeText(getApplicationContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
                 }
             });
