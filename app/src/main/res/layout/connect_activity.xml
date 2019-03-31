@@ -7,25 +7,25 @@
     tools:context=".ConnectActivity">
 
     <TextView
-        android:id="@+id/age_instruction"
+        android:id="@+id/age_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="63dp"
         android:text="@string/age_spinner_text"
         app:layout_constraintBottom_toTopOf="@+id/age_spinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <Spinner
         android:id="@+id/age_spinner"
-        android:prompt="@string/age_prompt"
         android:layout_width="368dp"
         android:layout_height="31dp"
         android:layout_marginStart="2dp"
         android:layout_marginLeft="2dp"
+        android:prompt="@string/age_prompt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -35,13 +35,13 @@
 
     <TextView
         android:id="@+id/content_description"
-        android:prompt="@string/content_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:prompt="@string/content_prompt"
         android:text="@string/content_spinner_text"
         app:layout_constraintBottom_toTopOf="@+id/content_spinner"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/age_spinner"
         app:layout_constraintVertical_bias="1.0" />
@@ -54,10 +54,32 @@
         android:layout_marginLeft="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.281" />
+        app:layout_constraintVertical_bias="0.262" />
+
+    <TextView
+        android:id="@+id/language_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:prompt="@string/content_prompt"
+        android:text="@string/language_spinner_text"
+        app:layout_constraintBottom_toTopOf="@+id/language_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/content_spinner"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="9dp" />
+
+    <Spinner
+        android:id="@+id/language_spinner"
+        android:layout_width="368dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.433" />
 
     <Button
         android:id="@+id/find_button"
@@ -70,4 +92,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.676" />
+
 </android.support.constraint.ConstraintLayout>
