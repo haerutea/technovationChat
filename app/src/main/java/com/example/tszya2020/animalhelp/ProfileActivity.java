@@ -1,6 +1,5 @@
 package com.example.tszya2020.animalhelp;
 
-import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,7 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -28,19 +25,14 @@ import com.google.firebase.iid.InstanceIdResult;
 public class ProfileActivity extends AppCompatActivity
         implements View.OnClickListener
 {
-    private String logging = "profileActivity";
+    private final String LOG_TAG = "profileActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private DatabaseReference userRef;
-    private DatabaseReference allUsersDBRef;
-    private DatabaseReference chatDBRef;
 
     private User userAccount;
     private String userUid;
-    private User opposingUser;
-    private Chat newChatlog;
-    private String bothUsersUid;
 
     //UI references
     private TextView verification;
@@ -57,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity
         setContentView(R.layout.profile_activity);
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
 
         verification = findViewById(R.id.profile_verification);
         username = findViewById(R.id.profile_username);
@@ -68,9 +61,10 @@ public class ProfileActivity extends AppCompatActivity
         //EL - There is no user in the Database at this point. It only lives in FirebaseAuth, not FirebaseDatabase,
         // so if a user can't be found in the database, you would have to get the info from auth and save it in the database.
         //The code bellow always returns null for the user since its never saved to the database.
-        userUid = getIntent().getStringExtra(Constants.UID_KEY);
+        userUid = mUser.getUid();
         userRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", userRef.toString());
+
         final TaskCompletionSource<String> getUserSource = new TaskCompletionSource<>();
         
         userRef.addListenerForSingleValueEvent(new ValueEventListener()
@@ -78,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot)
                 {
-                    Log.d("userChildrenData", dataSnapshot.getValue(User.class).toString());
                     userAccount = dataSnapshot.getValue(User.class);
                     userAccount.setOnline(true);
                     getUserSource.setResult(null);
@@ -88,7 +81,7 @@ public class ProfileActivity extends AppCompatActivity
                 public void onCancelled(DatabaseError databaseError)
                 {
                     getUserSource.setException(databaseError.toException());
-                    Log.d(logging, "onCancelled: " + databaseError.getMessage());
+                    Log.d(LOG_TAG, "onCancelled: " + databaseError.getMessage());
                 }
 
             });
@@ -98,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity
         {
             @Override
             public void onComplete(@NonNull Task<String> task) {
-                if(userAccount!= null)
+                if(userAccount != null)
                 {
                     //show text according to verification status
                     if(mAuth.getCurrentUser().isEmailVerified())
@@ -127,22 +120,25 @@ public class ProfileActivity extends AppCompatActivity
 
     public void onClick(View v)
     {
-        Log.d("user", "clicked on profile");
         int id = v.getId();
         if(id == chat.getId())
         {
+            Log.d(LOG_TAG, "clicked on chat");
             Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
             intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
             startActivity(intent);
         }
         else if(id == settings.getId())
         {
+            Log.d(LOG_TAG, "clicked on settings");
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         }
         else if(id == logout.getId())
         {
+            Log.d(LOG_TAG, "clicked on logout");
             userAccount.setOnline(false);
+            userRef.child(Constants.ONLINE_KEY).setValue(false);
             mAuth.signOut();
             Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
             startActivity(intent);
