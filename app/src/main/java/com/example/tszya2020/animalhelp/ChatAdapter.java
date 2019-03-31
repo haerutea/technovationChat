@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 //https://github.com/DeKoServidoni/FirebaseChatAndroid/blob/master/app/src/main/java/com/dekoservidoni/firebasechat/adapters/ChatAdapter.java
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder>
@@ -27,7 +26,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     }
 
     private Chat userChatlog;
-    private List<Message> messageContent;
+    private ArrayList<Message> messageContent;
 
     public ChatAdapter()
     {
