@@ -88,7 +88,9 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
         String uid = getSharedPreferences(Constants.PREF_USER_INFO, MODE_PRIVATE)
                 .getString(Constants.UID_KEY, "");
         //change token value in database
-        Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(uid).child(Constants.TOKEN_KEY).child(token).setValue(true);
+        if(uid != null)
+            Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(uid)
+                    .child(Constants.TOKEN_KEY).child(token).setValue(true);
         //change token value in sharedPref
         UserSharedPreferences.getInstance(this).setInfo(Constants.TOKEN_KEY, token);
     }
