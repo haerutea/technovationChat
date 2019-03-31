@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            logIn(user);
+                            goToProfile(user);
                         }
                         else
                         {
@@ -126,36 +126,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return valid;
     }
 
-    protected void logIn(final FirebaseUser user)
+    protected void goToProfile(FirebaseUser user)
     {
-        FirebaseDatabase.getInstance().getReference().child("user").child(user.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener()
-                {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                HashMap userMap = (HashMap) dataSnapshot.getValue();
-
-                if (userMap != null)
-                {
-                    String uid = (String) userMap.get(Constants.UID_KEY);
-                    String name = (String) userMap.get(Constants.USERNAME_KEY);
-                    String email = (String) userMap.get(Constants.EMAIL_KEY);
-                    String rank = (String) userMap.get(Constants.RANK_KEY);
-                    String token = (String) userMap.get(Constants.TOKEN_KEY);
-                    boolean online = (boolean) userMap.get(Constants.ONLINE_KEY);
-                    boolean chatting = (boolean) userMap.get(Constants.CHATTING_KEY);
-                    User userPref = new User(uid, name, email, rank, token, online, chatting);
-                    UserSharedPreferences.getInstance(LoginActivity.this).saveUserInfo(userPref);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "login failed: " + databaseError.getMessage());
-            }
-        });
-
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
         intent.putExtra(Constants.UID_KEY, user.getUid());
         startActivity(intent);
