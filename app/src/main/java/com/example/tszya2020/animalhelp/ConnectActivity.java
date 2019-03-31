@@ -23,30 +23,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ConnectActivity extends AppCompatActivity implements View.OnClickListener
 {
 
     //variables
+    private final String LOG_TAG = "ConnectActivity";
     private User userAccount;
     private User opposingUser;
     private Chat newChatlog;
     private String bothUsersUid;
+    private final String AGE = "age";
     private String selectedAgeGroup;
+    private final String CATEGORY ="category";
     private String selectedCategory;
-    private ArrayList<String> setPreferences;
+    private final String LANGUAGE = "language";
+    private String selectedLanguage;
     private DatabaseReference allUsersDBRef;
-
-    //dropdown menu choices, these categories are referenced off 7Cups' list
-    private final String[] targetAgeGroups =
-            {"Teens (18<)", "Young Adults (18-35)", "Adults (35+)", "Everyone"};
-    private final String[] categoryGroups =
-            {"Depression", "Anxiety", "Stress", "Motivation", "ADHD", "General Mental Health", "Others"};
 
     //UI
     private Button bFind;
     private Spinner ageDropdown;
     private Spinner contentDropdown;
+    private Spinner languageDropdown;
 
 
     @Override
@@ -56,15 +56,15 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.connect_activity);
 
         userAccount = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER_KEY);
-        bFind = (Button) findViewById(R.id.find_button);
+        bFind = findViewById(R.id.find_button);
         bFind.setOnClickListener(this);
+
         //https://developer.android.com/guide/topics/ui/controls/spinner#java
         //age dropdown menu
-        ageDropdown = (Spinner) findViewById(R.id.age_spinner);
+        ageDropdown = findViewById(R.id.age_spinner);
         //since items are from an array
         ArrayAdapter<String> ageArrAdapter = new ArrayAdapter<String>(ConnectActivity.this,
-                android.R.layout.simple_spinner_item, targetAgeGroups);
-
+                android.R.layout.simple_spinner_item, Constants.TARGET_AGE_GROUPS);
         ageArrAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ageDropdown.setAdapter(ageArrAdapter);
         ageDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -82,11 +82,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         //content dropdown menu
-        contentDropdown = (Spinner) findViewById(R.id.content_spinner);
+        contentDropdown = findViewById(R.id.content_spinner);
         //since items are from an array
         ArrayAdapter<String> contentArrAdapter = new ArrayAdapter<String>(ConnectActivity.this,
-                android.R.layout.simple_spinner_item, categoryGroups);
-
+                android.R.layout.simple_spinner_item, Constants.CATEGORY_GROUPS);
         contentArrAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         contentDropdown.setAdapter(contentArrAdapter);
         contentDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -100,16 +99,32 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
+
             }
         });
+        //language dropdown menu
+        languageDropdown = findViewById(R.id.language_spinner);
+        //items are in an array
+        ArrayAdapter<String> languageArrAdapter = new ArrayAdapter<String>
+                (ConnectActivity.this, android.R.layout.simple_spinner_item, Constants.LANGUAGE_GROUPS);
+        languageDropdown.setAdapter(languageArrAdapter);
+        languageDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                selectedLanguage = parent.getItemAtPosition(position).toString();
+            }
 
-        setPreferences = new ArrayList<String>();
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+            }
+        });
     }
 
     private void findOpposingUser()
     {
-        setPreferences.add(selectedAgeGroup);
-        setPreferences.add(selectedCategory);
         final ProgressDialog connecting = DialogUtils
                 .showProgressDialog(this, "Attempting to connect to chat");
         allUsersDBRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH);
@@ -120,36 +135,58 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                boolean found = false;
+                User okUser = null;
                 for(DataSnapshot userSnapshot : dataSnapshot.getChildren())
                 {
                     Log.d("userChildrenData", userSnapshot.getValue(User.class).toString());
                     User tempUser = userSnapshot.getValue(User.class);
-                    Log.d("tempUserCurrent", userAccount.getEmail());
-                    Log.d("tempUser", tempUser.getEmail());
-                    if(tempUser.getEmail().equals(userAccount.getEmail()))
+                    boolean age, category, language;
+                    //if status-wise they're avail
+                    if(!tempUser.getEmail().equals(userAccount.getEmail())
+                            && tempUser.getOnline() && !tempUser.getChatting())
                     {
-                        Log.d("tempUser", "temp");
-                        continue;
-                    }
-                    if(tempUser.getOnline() && !tempUser.getChatting()) //if online but not chatting
-                    {
-                        found = true;
-                        Log.d("opposingUser", "found");
-                        opposingUser = tempUser;
-                        Request chatRequest = new Request(userAccount.getUid(), userAccount.getUsername(), setPreferences);
-                        //add request to database with opposing user's UID as path name
-                        Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
-                                .child(opposingUser.getUid()).setValue(chatRequest);
-                        getOpposingUserSource.setResult(null);
-                        break;
+                        ArrayList<String> matching = tempUser.getStrengths();
+                        age = matching.contains(selectedAgeGroup);
+                        category = matching.contains(selectedCategory);
+                        language = matching.contains(selectedLanguage);
+                        if(age && category && language) //if user with all 3 matches
+                        {
+                            opposingUser = tempUser;
+                            break;
+                        }
+                        else if(language && category || language && age)
+                        {
+                            okUser = tempUser;
+                        }
+                        else if(language && okUser == null)
+                        {
+                            okUser = tempUser;
+                        }
                     }
                 }
-                if(!found)
+                //if no perfect match but there was still a user that was ok
+                if(opposingUser == null)
+                {
+                    opposingUser = okUser;
+                }
+                Log.d("opposingUser", "found");
+                HashMap<String, String> setPreferences = new HashMap<>();
+                setPreferences.put(AGE, selectedAgeGroup);
+                setPreferences.put(CATEGORY, selectedCategory);
+                setPreferences.put(LANGUAGE, selectedLanguage);
+                Request chatRequest = new Request(userAccount.getUid(), userAccount.getUsername(), setPreferences);
+                //add request to database with opposing user's UID as path name
+                Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
+                        .child(opposingUser.getUid()).child(userAccount.getUid()).setValue(true);
+                //add request details to userAccount branch
+                Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userAccount.getUid()).child(Constants.REQUEST_PATH).setValue(chatRequest);
+                getOpposingUserSource.setResult(null);
+
+                //if there wasn't even an ok one LOL
+                if(opposingUser == null)
                 {
                     Log.d("opposingUser", "not found");
                     connecting.dismiss();
-
                     Toast.makeText(ConnectActivity.this, "Matching failed, no users available",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -169,39 +206,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             public void onComplete(@NonNull Task<String> task)
             {
                 Log.d("connect", " to chat database");
-                //connectChat();
                 connecting.dismiss();
-            }
-        });
-
-    }
-
-    private void connectChat()
-    {
-        bothUsersUid = userAccount.getUid() + opposingUser.getUid();
-        Constants.BASE_INSTANCE.child(Constants.CHAT_PATH)
-                .addListenerForSingleValueEvent(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                newChatlog = new Chat(userAccount, opposingUser);
-                FirebaseDatabase.getInstance().getReference().child(Constants.CHAT_PATH)
-                        .child(bothUsersUid).setValue(newChatlog);
-                Log.d("toChatActivity", "fromConnectActivity");
-                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                //https://stackoverflow.com/a/2736612
-                intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
-                //TODO: FIGURE OUT IF ALL THESE IS NEEDED vvv
-                intent.putExtra(Constants.UID_KEY, userAccount.getUid());
-                intent.putExtra(Constants.OPPOSING_USER_KEY, opposingUser);
-                intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUsersUid);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
+                ProgressDialog waitingForConfirm = DialogUtils.showProgressDialog(ConnectActivity.this,
+                        "Opposing user found, waiting for confirmation...");
+                waitingForConfirm.show();
             }
         });
     }
