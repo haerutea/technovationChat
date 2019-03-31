@@ -1,6 +1,7 @@
 package com.example.tszya2020.animalhelp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 //https://stackoverflow.com/a/2736612
 public class User implements Serializable
@@ -9,8 +10,7 @@ public class User implements Serializable
     private String uid;
     private String username;
     private String email;
-    private String rank;
-    private String token;
+    private ArrayList<String> strengths;
     private boolean onlineStatus;
     private boolean chattingStatus;
 
@@ -19,13 +19,12 @@ public class User implements Serializable
 
     }
 
-    public User(String inUid, String inName, String inEmail, String inRank, String inToken, boolean online, boolean chatting)
+    public User(String inUid, String inName, String inEmail, ArrayList<String> inStrengths, boolean online, boolean chatting)
     {
         uid = inUid;
         username = inName;
         email = inEmail;
-        rank = inRank;
-        token = inToken;
+        strengths = inStrengths;
         onlineStatus = online;
         chattingStatus = chatting;
     }
@@ -46,14 +45,9 @@ public class User implements Serializable
         this.email = inEmail;
     }
 
-    public void setRank(String inputRank)
+    public void setStrengths(ArrayList<String> inStrengths)
     {
-        this.rank = inputRank;
-    }
-
-    public void setToken(String token)
-    {
-        this.token = token;
+        this.strengths = inStrengths;
     }
 
     public void setOnline(boolean inputOnline)
@@ -81,14 +75,9 @@ public class User implements Serializable
         return email;
     }
 
-    public String getRank()
+    public ArrayList<String> getStrengths()
     {
-        return rank;
-    }
-
-    public String getToken()
-    {
-        return token;
+        return strengths;
     }
 
     public boolean getOnline()
