@@ -7,7 +7,7 @@ public class DialogUtils {
 
 
     //https://stackoverflow.com/a/37428936
-    protected static ProgressDialog showProgressDialog(Context context, String message)
+    public static ProgressDialog showProgressDialog(Context context, String message)
     {
         ProgressDialog progress = new ProgressDialog(context);
         progress.setMessage(message);
