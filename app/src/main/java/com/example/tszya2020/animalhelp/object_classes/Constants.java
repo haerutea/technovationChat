@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.object_classes;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
