@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.activities;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.tszya2020.animalhelp.object_classes.Constants;
+import com.example.tszya2020.animalhelp.DialogUtils;
+import com.example.tszya2020.animalhelp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;

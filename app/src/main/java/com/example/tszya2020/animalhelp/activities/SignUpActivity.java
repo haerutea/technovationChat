@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -13,6 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.tszya2020.animalhelp.object_classes.Constants;
+import com.example.tszya2020.animalhelp.DialogUtils;
+import com.example.tszya2020.animalhelp.R;
+import com.example.tszya2020.animalhelp.object_classes.User;
+import com.example.tszya2020.animalhelp.UserSharedPreferences;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

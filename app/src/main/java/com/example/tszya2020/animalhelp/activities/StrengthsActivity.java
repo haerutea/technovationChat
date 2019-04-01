@@ -1,13 +1,14 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.activities;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.Button;
+
+import com.example.tszya2020.animalhelp.R;
+import com.example.tszya2020.animalhelp.StrengthsAdapter;
+import com.example.tszya2020.animalhelp.object_classes.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;

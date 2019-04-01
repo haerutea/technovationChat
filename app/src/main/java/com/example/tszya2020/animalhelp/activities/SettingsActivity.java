@@ -1,10 +1,13 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.example.tszya2020.animalhelp.ChangePassswordFragment;
+import com.example.tszya2020.animalhelp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -12,8 +15,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 {
 
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-    private Button change_password;
-    private Button change_medication;
+    private Button changePassword;
+    private Button changeMedication;
+    private Button confirm;
+    private EditText username;
+    private EditText counsellorPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,14 +27,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        change_password = findViewById(R.id.change_password_button);
-        change_medication = findViewById(R.id.change_medication_button);
-        change_medication.setEnabled(false);
+        confirm = findViewById(R.id.confirm_button);
+        changeMedication = findViewById(R.id.change_medication_button);
+        changeMedication.setEnabled(false);
+        changePassword = findViewById(R.id.change_password_button);
         if(!mUser.isEmailVerified())
         {
-            change_password.setEnabled(false);
+            changePassword.setEnabled(false);
         }
-        change_password.setOnClickListener(this);
+        confirm.setOnClickListener(this);
+        changePassword.setOnClickListener(this);
     }
 
     public void openPassword()
@@ -37,17 +45,22 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         passFrag.show(this.getSupportFragmentManager(), "passwordFragment");
     }
 
+    public void confirmChanges()
+    {
+
+    }
+
     @Override
     public void onClick(View v)
     {
         int i = v.getId();
-        if(i == change_password.getId())
+        if(i == changePassword.getId())
         {
             openPassword();
         }
-        else if(i == change_medication.getId())
+        else if(i == confirm.getId())
         {
-            //do nothing as of now
+            confirmChanges();
         }
     }
 }

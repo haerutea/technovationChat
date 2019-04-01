@@ -1,4 +1,4 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -13,6 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tszya2020.animalhelp.object_classes.Chat;
+import com.example.tszya2020.animalhelp.ChatAdapter;
+import com.example.tszya2020.animalhelp.object_classes.Constants;
+import com.example.tszya2020.animalhelp.object_classes.Message;
+import com.example.tszya2020.animalhelp.R;
+import com.example.tszya2020.animalhelp.object_classes.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
