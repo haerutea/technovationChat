@@ -1,23 +1,16 @@
-package com.example.tszya2020.animalhelp;
+package com.example.tszya2020.animalhelp.object_classes;
 
 import java.util.HashMap;
 
 public class Request
 {
-    private String uid;
     private String username;
     private HashMap<String, String> preferences;
 
-    public Request(String inUid, String inUsername, HashMap<String, String> inPreferences)
+    public Request(String inUsername, HashMap<String, String> inPreferences)
     {
-        uid = inUid;
         username = inUsername;
         preferences = inPreferences;
-    }
-
-    public String getUid()
-    {
-        return uid;
     }
 
     public String getUsername()
