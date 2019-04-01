@@ -20,7 +20,8 @@ public class StrengthsActivity extends AppCompatActivity
     private RecyclerView recyclerView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.strengths_activity);
 
