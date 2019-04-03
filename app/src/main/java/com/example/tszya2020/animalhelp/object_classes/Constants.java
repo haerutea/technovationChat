@@ -24,6 +24,7 @@ public class Constants {
     public static final DatabaseReference BASE_INSTANCE = FirebaseDatabase.getInstance().getReference();
     public static final String USER_PATH = "users";
     public static final String CHAT_PATH = "chats";
+    public static final String MESSAGE_PATH = "messages";
     public static final String NOTIF_TOKEN_PATH = "notification_token";
     public static final String REQUEST_PATH = "requests";
     public static final String DEFAULT_REQUEST = "noRequest";
@@ -37,17 +38,14 @@ public class Constants {
 
     //keys for Intent.putExtra
     public static final String CURRENT_USER_KEY = "currentUser";
-    public static final String OPPOSING_USER_KEY = "opposingUser";
     public static final String CHAT_ROOM_ID_KEY = "chatRoomId";
     public static final String CHECKED_STRENGTHS_KEY = "checkedKey";
+    public static final String CHAT_OBJECT_KEY = "chatObject";
 
     //for notifications
     public static final String CHANNEL_ID = "AnimalChatID";
     public static final String CHANNEL_NAME = "AnimalChat";
     public static final String CHANNEL_DES = "temp";
     public static final int CHAT_NOTIF_ID = 1;
-
-    //user details
-    public static final String USER_UID = "";
 
 }
