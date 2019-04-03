@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:stretchColumns="1">
-
+<!--
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:hint=""
             android:ems="10"
             android:inputType="phone" />
-
+-->
         <Button
             android:id="@+id/change_password_button"
             android:layout_width="wrap_content"
