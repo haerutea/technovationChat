@@ -11,6 +11,9 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tszya2020.animalhelp.activities.SignUpActivity;
+import com.example.tszya2020.animalhelp.object_classes.Constants;
+
 import java.util.ArrayList;
 
 //code referenced from: https://c1ctech.com/android-checkedtextview-example/
