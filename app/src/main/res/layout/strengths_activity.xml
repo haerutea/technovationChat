@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".StrengthsActivity">
+    tools:context=".activities.StrengthsActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/strengths_recycler_view"
