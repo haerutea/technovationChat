@@ -1,18 +1,20 @@
 package com.example.tszya2020.animalhelp.object_classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Chat
+//https://stackoverflow.com/a/2736612
+public class Chat implements Serializable
 {
-    private User userOne;
-    private User userTwo;
+    private String userOne;
+    private String userTwo;
     private ArrayList<Message> messages;
 
     public Chat()
     {
     }
 
-    public Chat(User inUserOne, User inUserTwo)
+    public Chat(String inUserOne, String inUserTwo)
     {
         userOne = inUserOne;
         userTwo = inUserTwo;
@@ -24,12 +26,12 @@ public class Chat
         messages.add(inputMessage);
     }
 
-    public void setUserOne(User inputUserOne)
+    public void setUserOne(String inputUserOne)
     {
         this.userOne = inputUserOne;
     }
 
-    public void setUserTwo(User inputUserTwo)
+    public void setUserTwo(String inputUserTwo)
     {
         this.userTwo = inputUserTwo;
     }
@@ -39,12 +41,12 @@ public class Chat
         return messages;
     }
 
-    public User getUserOne()
+    public String getUserOne()
     {
         return userOne;
     }
 
-    public User getUserTwo()
+    public String getUserTwo()
     {
         return userTwo;
     }
