@@ -2,6 +2,8 @@ package com.example.tszya2020.animalhelp;
 
 import android.util.Log;
 
+import com.example.tszya2020.animalhelp.activities.ConfirmActivity;
+import com.example.tszya2020.animalhelp.object_classes.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
