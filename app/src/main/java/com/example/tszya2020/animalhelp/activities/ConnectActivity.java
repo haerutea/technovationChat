@@ -1,6 +1,7 @@
 package com.example.tszya2020.animalhelp.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,7 +45,9 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     private String selectedCategory;
     private final String LANGUAGE = "language";
     private String selectedLanguage;
+    private String bothUid;
     private DatabaseReference allUsersDBRef;
+    private DatabaseReference requestRef;
 
     //UI
     private Button bFind;
@@ -178,12 +181,14 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 setPreferences.put(AGE, selectedAgeGroup);
                 setPreferences.put(CATEGORY, selectedCategory);
                 setPreferences.put(LANGUAGE, selectedLanguage);
-                Request chatRequest = new Request(userAccount.getUsername(), setPreferences);
-                //add request to database with opposing user's UID as path name
-                Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
-                        .child(opposingUser.getUid()).child(userAccount.getUid()).setValue(true);
+                HashMap<String, Boolean> uid = new HashMap<>();
+                uid.put(userAccount.getUid(), true);
+                Request chatRequest = new Request(uid, userAccount.getUsername(), setPreferences);
                 //add request details to userAccount branch
-                Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userAccount.getUid()).child(Constants.REQUEST_PATH).setValue(chatRequest);
+                requestRef = Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
+                        .child(opposingUser.getUid());
+                requestRef.setValue(chatRequest);
+                //add request to database with opposing user's UID as path name
                 getOpposingUserSource.setResult(null);
 
                 //if there wasn't even an ok one LOL
@@ -214,8 +219,36 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 ProgressDialog waitingForConfirm = DialogUtils.showProgressDialog(ConnectActivity.this,
                         "Opposing user found, waiting for confirmation...");
                 waitingForConfirm.show();
+                Constants.BASE_INSTANCE.child(Constants.CHAT_PATH).addValueEventListener(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                    {
+                        bothUid = opposingUser.getUid() + userAccount.getUid();
+                        //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#hasChild(java.lang.String)
+                        if(dataSnapshot.hasChild(bothUid))
+                        {
+                            connectChat();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError)
+                    {
+
+                    }
+                });
             }
         });
+    }
+
+    public void connectChat()
+    {
+        Chat chatlog = new Chat(opposingUser.getUid(), userAccount.getUid());
+        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+        intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUid);
+        intent.putExtra(Constants.CHAT_OBJECT_KEY, chatlog);
+        startActivity(intent);
     }
 
     @Override
