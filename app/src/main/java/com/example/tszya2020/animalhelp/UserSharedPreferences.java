@@ -2,7 +2,8 @@ package com.example.tszya2020.animalhelp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.ContactsContract;
+
+import com.example.tszya2020.animalhelp.object_classes.Constants;
 
 // referenced from:
 // https://github.com/hieuapp/android-firebase-chat/blob/master/RivChat/app/src/main/java/com/android/rivchat/data/SharedPreferenceHelper.java
