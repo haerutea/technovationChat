@@ -27,9 +27,7 @@ After logging in, the user will be met with the profile screen, displaying perso
 
 <h3>Todo</h3>
 <ul
-  <li>Find out why branch with 2 same users keeps creating on connect</li>
   <li>Add save chat feature</li>
-  <li>Choose what rank of users to chat with</li>
   <li>change 'if user is free' logic.  Right now user is 'free' if they're logged on.  Maybe allow users to set destinated timeframes?</li>
   <li>Create filter for inappropriate words in chats.</li>
   <li>OPTIONAL: add stats?</li>
