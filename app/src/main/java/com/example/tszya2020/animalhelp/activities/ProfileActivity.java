@@ -59,9 +59,6 @@ public class ProfileActivity extends AppCompatActivity
         settings = findViewById(R.id.settings_button);
         logout = findViewById(R.id.log_out_button);
 
-        //EL - There is no user in the Database at this point. It only lives in FirebaseAuth, not FirebaseDatabase,
-        // so if a user can't be found in the database, you would have to get the info from auth and save it in the database.
-        //The code bellow always returns null for the user since its never saved to the database.
         userUid = mUser.getUid();
         userRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", userRef.toString());
