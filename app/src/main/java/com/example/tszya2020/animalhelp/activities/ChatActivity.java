@@ -13,16 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tszya2020.animalhelp.UserSharedPreferences;
 import com.example.tszya2020.animalhelp.object_classes.Chat;
 import com.example.tszya2020.animalhelp.ChatAdapter;
 import com.example.tszya2020.animalhelp.object_classes.Constants;
 import com.example.tszya2020.animalhelp.object_classes.Message;
 import com.example.tszya2020.animalhelp.R;
-import com.example.tszya2020.animalhelp.object_classes.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
@@ -32,11 +31,8 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     //TODO: ADD SAVE CHAT FEATURE
     private final String LOG_TAG = "ChatFragmentDatabase";
     private DatabaseReference roomReference;
-    private DatabaseReference chatsRef;
+    private DatabaseReference messageRef;
     private ChatAdapter adapter;
-    private DatabaseReference currentUserDBRef;
-    private DatabaseReference allUsersDBRef;
-    private DatabaseReference chatDBRef;
 
     //UI references
     //https://developer.android.com/reference/android/support/v7/widget/LinearLayoutManager
@@ -45,11 +41,11 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     private Button sendButton;
     private TextView chatRoomName;
 
-    //String referenced
+    //objects referenced
     private String userUid;
-    private User userAccount;
-    private User opposingUser;
     private String chatRoomId;
+    private String username;
+    private Chat newChatLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,14 +56,13 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
 
-        userUid = getIntent().getStringExtra(Constants.UID_KEY);
-        userAccount = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER_KEY);
-        opposingUser = (User) getIntent().getSerializableExtra(Constants.OPPOSING_USER_KEY);
-        chatRoomId = getIntent().getStringExtra(Constants.CHAT_ROOM_ID_KEY);
+        userUid = UserSharedPreferences.getInstance(this).getStringInfo(Constants.UID_KEY);
+        username = UserSharedPreferences.getInstance(this).getStringInfo(Constants.USERNAME_KEY);
 
+        chatRoomId = getIntent().getStringExtra(Constants.CHAT_ROOM_ID_KEY);
+        newChatLog = (Chat) getIntent().getSerializableExtra(Constants.CHAT_OBJECT_KEY);
         setupConnection();
 
-        Chat newChatLog = new Chat(userAccount, opposingUser);
         adapter = new ChatAdapter(newChatLog);
 
         chatRoomName = findViewById(R.id.room_name);
@@ -86,9 +81,9 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         if(!messageInput.getText().toString().isEmpty())
         {
             Message message = new Message(userUid,
-                    userAccount.getUsername(), messageInput.getText().toString());
+                    username, messageInput.getText().toString());
 
-            chatsRef.child(String.valueOf(new Date().getTime())).setValue(message);
+            messageRef.child(String.valueOf(new Date().getTime())).setValue(message);
 
             linearLayoutManager.scrollToPosition(adapter.getItemCount() - 1);
 
@@ -100,24 +95,9 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     //connecting to database
     private void setupConnection()
     {
-        FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                Log.d(LOG_TAG, "room number get success");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
-                Log.e(LOG_TAG, "room number get failed: " + databaseError.getMessage());
-            }
-        });
-
-        roomReference = FirebaseDatabase.getInstance().getReference(chatRoomId);
-
-            roomReference.addValueEventListener(new ValueEventListener() {
+        roomReference = Constants.BASE_INSTANCE.child(Constants.CHAT_PATH).child(chatRoomId);
+        messageRef = roomReference.child(Constants.MESSAGE_PATH);
+            messageRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d(LOG_TAG, "Success");
@@ -155,7 +135,6 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     {
         roomReference.removeValue();
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
-        intent.putExtra(Constants.UID_KEY, userUid);
         startActivity(intent);
     }
 }
