@@ -212,10 +212,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void signUp()
     {
         //change FirebaseUser displayName field
-        User newUser = new User(mUser.getUid(), usernameField.getText().toString(), mUser.getEmail(), checkedStrengths, true, false);
+        String username = usernameField.getText().toString();
+        User newUser = new User(mUser.getUid(), username, mUser.getEmail(), checkedStrengths, true, false);
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.USER_PATH).child(mUser.getUid()).setValue(newUser);
         UserSharedPreferences.getInstance(SignUpActivity.this).setInfo(Constants.UID_KEY, mUser.getUid());
+        UserSharedPreferences.getInstance(this).setInfo(Constants.USERNAME_KEY, username);
         //https://firebase.google.com/docs/cloud-messaging/android/client?authuser=0
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
