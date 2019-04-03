@@ -9,6 +9,8 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.example.tszya2020.animalhelp.object_classes.Constants;
+
 public class NotificationSender
 {
     //https://developer.android.com/training/notify-user/build-notification#java
