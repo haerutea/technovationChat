@@ -19,9 +19,11 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="re_password">Re-enter Password</string>
+    <string name="next">Next</string>
     <string name="sign_up">Sign up</string>
     <string name="log_in">Log in</string>
     <string name="logged_in">Logged In</string>
+
     <!-- verify email -->
     <string name="proceed">Proceed</string>
     <string name="resend_email">Resend email</string>
@@ -29,15 +31,20 @@
 
     <!-- related to profile -->
     <string name="verified_email">Email is verified.</string>
-    <string name="not_verified_email">Email is not verified.</string>
+    <string name="not_verified_email">Email is not verified.
+        Some features may be unavailable.</string>
     <string name="log_out">Log Out</string>
     <string name="logged_out">Logged Out</string>
     <string name="go_chat">Chat</string>
 
     <!-- settings -->
     <string name="settings">Settings</string>
+    <string name="change_username">Change Username</string>
+    <string name="phone_numbers">Phone numbers</string>
+    <string name="counsellor">Counsellor</string>
     <string name="change_password">Change password</string>
     <string name="current_password">Current Password</string>
+    <string name="change_medication">Change medication</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
 
@@ -51,6 +58,7 @@
     <!-- related to category choosing -->
     <string name="age_spinner_text">Choose an age group</string>
     <string name="content_spinner_text">Choose what you want to chat about</string>
+    <string name="language_spinner_text">Choose your language</string>
     <string name="find_user">Find user</string>
     <string name="age_prompt">Age groups</string>
     <string name="content_prompt">Content</string>
