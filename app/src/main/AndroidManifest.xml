@@ -16,8 +16,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- https://github.com/firebase/quickstart-android/blob/d307afe958a672bebdf3394c10017cc671c027e2/messaging/app/src/main/AndroidManifest.xml#L48-L52 -->
+        <service android:name=".FirebaseNotificationMessaging">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
-            android:name=".AuthActivity"
+            android:name=".activities.AuthActivity"
             android:label="@string/title_activity_auth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,47 +34,47 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName=".AuthActivity">
+            android:parentActivityName=".activities.AuthActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tszya2020.animalhelp.AuthActivity" />
+                android:value="com.example.tszya2020.animalhelp.activities.AuthActivity" />
         </activity>
         <activity
-            android:name=".SignUpActivity"
+            android:name=".activities.SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:parentActivityName=".AuthActivity">
+            android:parentActivityName=".activities.AuthActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tszya2020.animalhelp.AuthActivity" />
+                android:value="com.example.tszya2020.animalhelp.activities.AuthActivity" />
         </activity>
         <activity
-            android:name=".ProfileActivity"
+            android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile" />
-
         <activity
-            android:name=".ConnectActivity"
+            android:name=".activities.ConnectActivity"
             android:label="@string/title_activity_connect">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tszya2020.animalhelp.ProfileActivity" />
+                android:value="com.example.tszya2020.animalhelp.activities.ProfileActivity" />
         </activity>
         <activity
-            android:name=".ChatActivity"
+            android:name=".activities.ChatActivity"
             android:label="@string/title_activity_chat"
-            android:parentActivityName=".ProfileActivity">
+            android:parentActivityName=".activities.ProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tszya2020.animalhelp.ProfileActivity" />
+                android:value="com.example.tszya2020.animalhelp.activities.ProfileActivity" />
         </activity>
 
         <!-- https://developer.android.com/training/notify-user/navigation.html#ExtendedNotification -->
         <activity
-            android:name=".ConfirmActivity"
+            android:name=".activities.ConfirmActivity"
             android:excludeFromRecents="true"
-            android:taskAffinity=""></activity>
-        <activity android:name=".SettingsActivity"></activity>
+            android:taskAffinity="" />
+        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.StrengthsActivity"></activity>
     </application>
 
 </manifest>
