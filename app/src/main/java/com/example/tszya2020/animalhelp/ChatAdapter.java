@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.tszya2020.animalhelp.object_classes.Chat;
+import com.example.tszya2020.animalhelp.object_classes.Message;
+
 import java.util.ArrayList;
 
 //https://github.com/DeKoServidoni/FirebaseChatAndroid/blob/master/app/src/main/java/com/dekoservidoni/firebasechat/adapters/ChatAdapter.java
