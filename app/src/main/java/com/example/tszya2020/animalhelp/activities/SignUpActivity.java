@@ -1,5 +1,6 @@
 package com.example.tszya2020.animalhelp.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -108,6 +109,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    private boolean showDisclaimer()
+    {
+        //https://developer.android.com/guide/topics/ui/dialogs.html#java
+        String disclaimer = "This app isn\'t tended for emergency purposes, but rather simple and " +
+                "emotionally-easing chats with anonymous strangers.  If you're in a critical/dangerous" +
+                "situation, you should call emergency services or close ones to seek guidance instead.";
+        AlertDialog.Builder disclaimerBuilder = new AlertDialog.Builder(this);
+        //TODO: SET DISCLAIMER
+        /*disclaimerBuilder.setMessage(disclaimer)
+                .setTitle("PLEASE READ THIS")*/
+
+        return true;
+    }
     private void createAccount(String email, String password)
     {
         final ProgressDialog loading = DialogUtils.showProgressDialog(this, getString(R.string.loading));
@@ -240,7 +254,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         startActivity(intent);
     }
 
-    //https://stackoverflow.com/questions/41105826/change-displayname-in-firebase/43680527#43680527
     @Override
     protected void onResume()
     {
