@@ -43,6 +43,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
     //objects referenced
     private String userUid;
+    private DatabaseReference userChatStatus;
     private String chatRoomId;
     private String username;
     private Chat newChatLog;
@@ -58,6 +59,10 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
         userUid = UserSharedPreferences.getInstance(this).getStringInfo(Constants.UID_KEY);
         username = UserSharedPreferences.getInstance(this).getStringInfo(Constants.USERNAME_KEY);
+
+        userChatStatus = Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userUid)
+                .child(Constants.CHATTING_KEY);
+        userChatStatus.setValue(true);
 
         chatRoomId = getIntent().getStringExtra(Constants.CHAT_ROOM_ID_KEY);
         newChatLog = (Chat) getIntent().getSerializableExtra(Constants.CHAT_OBJECT_KEY);
@@ -134,6 +139,7 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
     public void onBackPressed()
     {
         roomReference.removeValue();
+        userChatStatus.setValue(false);
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
         startActivity(intent);
     }
