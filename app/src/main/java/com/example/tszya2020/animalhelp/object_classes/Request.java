@@ -1,6 +1,7 @@
 package com.example.tszya2020.animalhelp.object_classes;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Request
 {
@@ -24,6 +25,16 @@ public class Request
         return uid;
     }
 
+    public String getUidString()
+    {
+        String neededUid = null;
+        for(String key : uid.keySet())
+        {
+            neededUid = key;
+        }
+        return neededUid;
+    }
+
     public String getUsername()
     {
         return username;
@@ -37,7 +48,10 @@ public class Request
     @Override
     public String toString()
     {
+        for(Map.Entry<String, String> data : preferences.entrySet())
+        {
 
+        }
         return username + " has requested to chat with you.  Here are the preferences chosen: "
                 + preferences.toString();
     }
