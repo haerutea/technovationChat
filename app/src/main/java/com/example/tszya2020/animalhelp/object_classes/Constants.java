@@ -25,7 +25,7 @@ public class Constants {
     public static final String USER_PATH = "users";
     public static final String CHAT_PATH = "chats";
     public static final String MESSAGE_PATH = "messages";
-    public static final String NOTIF_TOKEN_PATH = "notification_token";
+    public static final String SAVED_MESSAGE_PATH = "saved";
     public static final String REQUEST_PATH = "requests";
     public static final String DEFAULT_REQUEST = "noRequest";
     public static final String PREF_USER_INFO = "userdetails";
