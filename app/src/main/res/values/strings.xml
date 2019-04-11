@@ -24,15 +24,17 @@
     <string name="log_in">Log in</string>
     <string name="logged_in">Logged In</string>
 
-    <!-- verify email -->
-    <string name="proceed">Proceed</string>
-    <string name="resend_email">Resend email</string>
-    <string name="verify_email">Please verify your email to proceed.</string>
+    <!-- disclaimer -->
+    <string name="agree">Agree</string>
+    <string name="disagree">Disagree</string>
 
     <!-- related to profile -->
     <string name="verified_email">Email is verified.</string>
     <string name="not_verified_email">Email is not verified.
         Some features may be unavailable.</string>
+    <string name="username_text">Username: %1$s</string>
+    <string name="email_text">Email: %1$s</string>
+    <string name="saved_message">Saved Messages</string>
     <string name="log_out">Log Out</string>
     <string name="logged_out">Logged Out</string>
     <string name="go_chat">Chat</string>
