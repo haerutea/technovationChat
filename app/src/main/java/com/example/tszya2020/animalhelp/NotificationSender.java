@@ -14,17 +14,16 @@ import com.example.tszya2020.animalhelp.object_classes.Constants;
 public class NotificationSender
 {
     //https://developer.android.com/training/notify-user/build-notification#java
-    //TODO: it'll be cool if they could set the own priority
     public static void setNotif(Context inContext, Class destinationClass,
                                 String notifTitle, String notifContent, boolean startSpecialActivity)
     {
 
         Intent intent = new Intent(inContext, destinationClass);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent notifyPendingIntent;
 
         if(startSpecialActivity)
         {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             notifyPendingIntent = PendingIntent.getActivity(
                     inContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
