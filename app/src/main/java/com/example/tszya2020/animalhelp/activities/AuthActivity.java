@@ -31,9 +31,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private Button bLogin;
 
     /**
-     * sets content from auth_activity.xml layout, sets mAuth value,
-     * assigns buttons to viewIds, checks for google play services
-     * @param savedInstanceState
+     * when activity is first opened, sets content from auth_activity.xml layout,
+     * sets mAuth value, assigns buttons to viewIds, checks for google play services
+     * @param savedInstanceState data saved from onSaveInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,7 +59,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * when app is first opened, if there is already a user logged in,
+     * whenever app is opened, if there is already a user logged in,
      * call updateUI with that user.
      */
     @Override
