@@ -17,6 +17,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * the activity where user begins when they first open up the app on fresh download.
+ * Also where the user will end up when logging out.
+ * Has buttons to signup and login
+ */
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener
 {
     private final String LOG_TAG = "AuthActivity";
@@ -25,6 +30,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private Button bSignUp;
     private Button bLogin;
 
+    /**
+     * sets content from auth_activity.xml layout, sets mAuth value,
+     * assigns buttons to viewIds, checks for google play services
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -48,25 +58,34 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * when app is first opened, if there is already a user logged in,
+     * call updateUI with that user.
+     */
     @Override
     public void onStart()
     {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //if(currentUser != null) EL - removed this null check as it happens in updateUI
             Log.d(LOG_TAG, "update UI started with user in onStart()");
             updateUI(currentUser);
     }
 
+    /**
+     * triggered when a button is clicked
+     * @param v is the view that was clicked on
+     */
     public void onClick(View v)
     {
         int id = v.getId();
+        //if the user pressed on sign up
         if (id == bSignUp.getId())
         {
             Intent intent = new Intent(getApplicationContext(), StrengthsActivity.class);
             startActivity(intent);
         }
+        //if user pressed on login
         else if(id == bLogin.getId())
         {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -74,8 +93,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    protected void updateUI(FirebaseUser user)
+    /**
+     * opens up ProfileActivity directly is user is present
+     * @param user is the user that's logged in
+     */
+    private void updateUI(FirebaseUser user)
     {
+        //show a simple loading popup
         ProgressDialog loadingWindow = DialogUtils.showProgressDialog(this, "loading");
         if (user != null)
         {
@@ -83,6 +107,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra(Constants.UID_KEY, user.getUid());
             startActivity(intent);
         }
+        //get rid of popup
         loadingWindow.dismiss();
     }
 }
