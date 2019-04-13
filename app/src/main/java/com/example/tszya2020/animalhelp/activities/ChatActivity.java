@@ -53,9 +53,9 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
      * when activity is first created, set content from chat_activity.xml,
      * creates a new linearLayoutManager for chat messages to be displayed.
      * gets current user's uid and username from sharedPreferences,
-     * gets chat object from intent and sets up chatAdapter for recyclerView,
-     * assigns input to viewId, also changes user chat status to true.
-     * @param savedInstanceState data saved from onSaveInstanceState
+     * sets up chatAdapter for recyclerView,
+     * assigns views to fields, also changes user chat status to true.
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
      */
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,7 +78,6 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
 
         //gets chat room name
         chatRoomId = getIntent().getStringExtra(Constants.CHAT_ROOM_ID_KEY);
-        setupConnection();
 
         //for recyclerView
         linearLayoutManager = new LinearLayoutManager(this);
@@ -88,6 +87,8 @@ public class ChatActivity extends AppCompatActivity implements TextView.OnEditor
         RecyclerView chat = findViewById(R.id.chat_recycler_view);
         chat.setLayoutManager(linearLayoutManager);
         chat.setAdapter(adapter);
+
+        setupConnection();
     }
 
     /**

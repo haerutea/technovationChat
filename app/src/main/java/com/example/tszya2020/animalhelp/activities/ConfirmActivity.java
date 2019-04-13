@@ -23,6 +23,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * special activity that can only be accessed through chat request notification,
+ * allows user to view request details, accept or deny.
+ */
 public class ConfirmActivity extends AppCompatActivity implements View.OnClickListener
 {
     private String currentUid;
@@ -36,23 +40,33 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
     private Button bAccept;
     private Button bDeny;
 
+    /**
+     * when activity is first opened, set content from confirm_activity.xml layout,
+     * assigns views to fields, sets description of textview, adds listener for buttons
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.confirm_activity);
+
         logName = "confirmingRequest";
         currentUid = UserSharedPreferences.getInstance(ConfirmActivity.this).getStringInfo(Constants.UID_KEY);
+
         tDescript = findViewById(R.id.request_description);
         bAccept = findViewById(R.id.request_accept);
         bDeny = findViewById(R.id.request_deny);
-
-        setDescription();
         bAccept.setOnClickListener(this);
         bDeny.setOnClickListener(this);
 
+        setDescription();
     }
 
+    /**
+     * sets description of text view by getting the request details from database,
+     * when details are obtained, set textView text.
+     */
     private void setDescription()
     {
         final TaskCompletionSource<String> getRequestData = new TaskCompletionSource<>();
@@ -65,6 +79,7 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
             {
                 sentRequest = dataSnapshot.getValue(Request.class);
                 Log.d(logName, "request " + sentRequest);
+                requesterUid = sentRequest.getUidString();
                 getRequestData.setResult(null);
             }
 
@@ -89,29 +104,45 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /**
+     * triggered when button is clicked
+     * @param v view that was clicked on
+     */
     @Override
     public void onClick(View v)
     {
         int id = v.getId();
+        //if accept button was clicked
         if(id == bAccept.getId())
         {
             connectChat();
         }
+        //if deny was clicked
         else if(id == bDeny.getId())
         {
-
+            //TODO: ADD DENY
         }
     }
 
+    /**
+     * connects user to chat by creating a Chat object and database branch,
+     * then starts ChatActivity
+     */
     private void connectChat()
     {
+        //removes request
         requestRef.removeValue();
+
+        //create chat room ID
         String bothUsersUid = currentUid + requesterUid;
+
+        //add Chat obj to database
         Chat newChatlog = new Chat(currentUid, requesterUid);
         Constants.BASE_INSTANCE.child(Constants.CHAT_PATH);
         FirebaseDatabase.getInstance().getReference().child(Constants.CHAT_PATH)
                 .child(bothUsersUid).setValue(newChatlog);
         Log.d("toChatActivity", "fromConnectActivity");
+
         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
         //https://stackoverflow.com/a/2736612
         intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUsersUid);

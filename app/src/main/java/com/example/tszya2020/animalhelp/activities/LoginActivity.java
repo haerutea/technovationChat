@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
- * A login screen that offers login via uEmail/password.
+ * A login screen that offers login via email and password.
  */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,6 +42,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button bLogIn;
 
 
+    /**
+     * when activity is first opened, set content from login_activity.xml,
+     * assign views to fields, add onClick listeners
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -58,9 +63,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         bLogIn.setOnClickListener(this);
     }
 
-    private void signIn(String email, String password) {
+    /**
+     * checks if form is correctly filled, if yes, calls FirebaseAuth's built-in signIn method,
+     * pass email and password as parameters.  If successful, call goToProfile with user as parameter
+     * if unsuccessful, Toast the error message.
+     * @param email email from user's input
+     * @param password password from user's input
+     */
+    private void signIn(String email, String password)
+    {
         Log.d(TAG, "signIn:" + email);
-        if (!formFilled()) {
+
+        if (!formFilled())
+        {
             return;
         }
         ProgressDialog loading = DialogUtils
@@ -68,12 +83,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
+                {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        //if user signed in successfully
                         if (task.isSuccessful())
                         {
-                            // Sign in success, update UI with the signed-in user's information
+                            //update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             goToProfile(user);
@@ -93,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             {
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                             }
-                            // If sign in fails, display a message to the user.
+                            //display error message to user
                             Toast.makeText(LoginActivity.this, "Authentication failed. " + errorMsg,
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -102,29 +119,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loading.dismiss();
     }
 
-    private boolean formFilled() {
+    /**
+     * checks if the form is filled in correctly where all EditTexts are filled,
+     * if not, show an error.
+     * @return true or false if form is filled in correctly.
+     */
+    private boolean formFilled()
+    {
         boolean valid = true;
 
         String email = emailField.getText().toString();
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email))
+        {
             emailField.setError("Required.");
             valid = false;
-        } else {
-            emailField.setError(null);
         }
 
         String password = passwordField.getText().toString();
-        if (TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password))
+        {
             passwordField.setError("Required.");
             valid = false;
-        } else {
-            passwordField.setError(null);
         }
 
         return valid;
     }
 
-    protected void goToProfile(FirebaseUser user)
+    /**
+     * sets user to be online on database, puts user's uid into intent and
+     * starts ProfileActivity.
+     * @param user the signed in user
+     */
+    private void goToProfile(FirebaseUser user)
     {
         Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(user.getUid())
                 .child(Constants.ONLINE_KEY).setValue(true);
@@ -133,11 +159,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(intent);
     }
 
+    /**
+     * called when user presses on forgot password button, shows ForgotPasswordFragment
+     */
     private void forgotPassword()
     {
         ForgotPasswordFragment forgotFrag = ForgotPasswordFragment.newInstance();
         forgotFrag.show(this.getSupportFragmentManager(), "forgotPasswordFrag");
     }
+
+    /**
+     * triggered when user clicks on view with onClickListener
+     * @param v the view user clicked on
+     */
     @Override
     public void onClick(View v)
     {
