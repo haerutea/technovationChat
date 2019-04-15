@@ -74,7 +74,8 @@
             android:excludeFromRecents="true"
             android:taskAffinity="" />
         <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.StrengthsActivity"></activity>
+        <activity android:name=".activities.StrengthsActivity" />
+        <activity android:name=".activities.SavedMessagesActivity"></activity>
     </application>
 
 </manifest>
