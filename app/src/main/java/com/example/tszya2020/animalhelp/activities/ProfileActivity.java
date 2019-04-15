@@ -116,7 +116,10 @@ public class ProfileActivity extends AppCompatActivity
                     }
                     username.setText(getString(R.string.username_text, userAccount.getUsername()));
                     email.setText(getString(R.string.email_text,userAccount.getEmail()));
-                    UserSharedPreferences.getInstance(ProfileActivity.this).setInfo(Constants.USERNAME_KEY, userAccount.getUsername());
+                    UserSharedPreferences.getInstance(ProfileActivity.this).
+                            setInfo(Constants.UID_KEY, userAccount.getUid());
+                    UserSharedPreferences.getInstance(ProfileActivity.this).
+                            setInfo(Constants.USERNAME_KEY, userAccount.getUsername());
                 }
                 else
                 {
@@ -128,8 +131,6 @@ public class ProfileActivity extends AppCompatActivity
 
         //adds uid and username to sharedPreferences, it's done here to prevent these details
         //from missing when user logins from another device.
-        UserSharedPreferences.getInstance(this).setInfo(Constants.UID_KEY, userAccount.getUid());
-        UserSharedPreferences.getInstance(this).setInfo(Constants.USERNAME_KEY, userAccount.getUsername());
 
         chat.setOnClickListener(this);
         savedMsg.setOnClickListener(this);
