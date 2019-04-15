@@ -7,19 +7,20 @@ import com.example.tszya2020.animalhelp.object_classes.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+/**
+ * extends FirebsaeMessageService, this class handles the message sent to this device from
+ * Cloud Function.  Also handles new device tokens.
+ */
 public class FirebaseNotificationMessaging extends FirebaseMessagingService
 {
 
     //this whole class is basically from the quickstart file by Firebase.
     //https://github.com/firebase/quickstart-android/blob/4017aac2bdc591dc8b9702953702f09921a4e76d/messaging/app/src/main/java/com/google/firebase/quickstart/fcm/java/MyFirebaseMessagingService.java
     private final String logTag = "messagingSerivce";
-    private final String notifTitle = "Request to chat";
     /**
      * Called when message is received.
-     *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
-    // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(logTag, "From: " + remoteMessage.getFrom());
@@ -33,13 +34,11 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
         if (remoteMessage.getNotification() != null) {
             Log.d(logTag, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             NotificationSender.setNotif(this, ConfirmActivity.class,
-                    notifTitle, remoteMessage.getNotification().getBody(), true);
+                    remoteMessage.getNotification().getTitle(),
+                    remoteMessage.getNotification().getBody(), true);
         }
     }
-    // [END receive_message]
 
-
-    // [START on_new_token]
     /**
      * Called if InstanceID token is updated. This may occur if the security of
      * the previous token had been compromised. Note that this is called when the InstanceID token
@@ -48,9 +47,6 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
     @Override
     public void onNewToken(String token) {
         Log.d(logTag, "new token: " + token);
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
         String uid = getSharedPreferences(Constants.PREF_USER_INFO, MODE_PRIVATE)
                 .getString(Constants.UID_KEY, "");
         //change token value in database
