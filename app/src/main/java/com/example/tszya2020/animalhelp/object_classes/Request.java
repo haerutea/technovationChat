@@ -57,7 +57,7 @@ public class Request
             desc.append("\n");
         }
 
-        return username + " has requested to chat with you.  Here are the preferences chosen: "
+        return username + " has requested to chat with you.  Here are the preferences chosen: \n"
                 + desc.toString();
     }
 }
