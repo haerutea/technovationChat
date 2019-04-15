@@ -11,9 +11,20 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.example.tszya2020.animalhelp.object_classes.Constants;
 
+//https://developer.android.com/training/notify-user/build-notification#java
+/**
+ * Utils class to send notifications
+ */
 public class NotificationSender
 {
-    //https://developer.android.com/training/notify-user/build-notification#java
+    /**
+     * sets notification contents and sends it
+     * @param inContext context where the notif is being sent from
+     * @param destinationClass where the notif will open to
+     * @param notifTitle title of notification
+     * @param notifContent message body of notification
+     * @param startSpecialActivity whether the destination class is a special activity or not
+     */
     public static void setNotif(Context inContext, Class destinationClass,
                                 String notifTitle, String notifContent, boolean startSpecialActivity)
     {
@@ -48,6 +59,10 @@ public class NotificationSender
 
     }
 
+    /**
+     * sets NotificationChannel for notifications sent
+     * @param context context of the notification is from
+     */
     private static void setChannel(Context context)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
