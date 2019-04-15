@@ -294,7 +294,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             }
         };
 
-        timer = new CountDownTimer(30000, 10000)
+        timer = new CountDownTimer(40000, 10000)
         {
             @Override
             public void onTick(long millisUntilFinished)
@@ -312,7 +312,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 waitingForConfirm.dismiss();
                 unavailUsers.add(opposingUser);
                 Toast.makeText(ConnectActivity.this,
-                        "Opposing user failed to accept within 30 seconds", Toast.LENGTH_LONG).show();
+                        "Opposing user failed to accept within 40 seconds", Toast.LENGTH_LONG).show();
             }
         };
         chatsRef.addValueEventListener(listener);
