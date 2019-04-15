@@ -156,6 +156,7 @@ public class ProfileActivity extends AppCompatActivity
         {
             Log.d(LOG_TAG, "clicked on saved msg");
             Intent intent = new Intent(getApplicationContext(), SavedMessagesActivity.class);
+            intent.putExtra(Constants.UID_KEY, userUid);
             startActivity(intent);
 
         }
