@@ -97,7 +97,7 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         };
-        requestRef.addValueEventListener(descriptListener);
+        requestRef.addListenerForSingleValueEvent(descriptListener);
 
         //when code finishes getting uid from database
         getRequestData.getTask().addOnCompleteListener(new OnCompleteListener<String>()
