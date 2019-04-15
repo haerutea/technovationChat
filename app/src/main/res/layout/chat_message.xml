@@ -28,18 +28,19 @@
 
             <TextView
                 android:id="@+id/chat_username"
+                style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:paddingStart="3dp"
                 android:paddingLeft="3dp"
                 android:paddingEnd="0dp"
                 android:paddingRight="0dp"
-                android:text=""
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="username"
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/chat_message"
+                style="@style/Base.TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -47,8 +48,8 @@
                 android:paddingLeft="3dp"
                 android:paddingEnd="0dp"
                 android:paddingRight="0dp"
-                android:text=""
-                android:textSize="12sp" />
+                android:text="message"
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/star_view"
