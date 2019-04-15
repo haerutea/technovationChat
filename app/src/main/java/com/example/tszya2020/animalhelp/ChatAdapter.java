@@ -115,7 +115,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     }
 
     /**
-     * constructor
+     * constructor, instantiates fields
      * @param inputChatlog Chat object containing messages
      */
     public ChatAdapter(Chat inputChatlog)
