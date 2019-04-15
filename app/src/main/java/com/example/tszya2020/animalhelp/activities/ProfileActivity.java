@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.tszya2020.animalhelp.UserSharedPreferences;
 import com.example.tszya2020.animalhelp.object_classes.Constants;
 import com.example.tszya2020.animalhelp.R;
 import com.example.tszya2020.animalhelp.object_classes.User;
@@ -23,6 +24,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * where the profile of user is displayed, also where the user can connect to chat.
+ * change it's settings, and see it's saved messages
+ */
 public class ProfileActivity extends AppCompatActivity
         implements View.OnClickListener
 {
@@ -40,9 +45,16 @@ public class ProfileActivity extends AppCompatActivity
     private TextView username;
     private TextView email;
     private Button chat;
+    private Button savedMsg;
     private Button settings;
     private Button logout;
 
+    /**
+     * when activity is first opened, set content from profile_activity.xml,
+     * gets current FirebaseUser, assigns views to fields, gets User from database,
+     * sets view texts, adds info to SharedPreferences, sets onClickListeners to buttons
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
+     */
     @Override
     protected final void onCreate(Bundle savedInstanceState)
     {
@@ -56,15 +68,17 @@ public class ProfileActivity extends AppCompatActivity
         username = findViewById(R.id.profile_username);
         email = findViewById(R.id.profile_email);
         chat = findViewById(R.id.chat_button);
+        savedMsg = findViewById(R.id.saved_msg_button);
         settings = findViewById(R.id.settings_button);
         logout = findViewById(R.id.log_out_button);
+
 
         userUid = mUser.getUid();
         userRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", userRef.toString());
 
         final TaskCompletionSource<String> getUserSource = new TaskCompletionSource<>();
-        
+
         userRef.addListenerForSingleValueEvent(new ValueEventListener()
             {
                 @Override
@@ -100,8 +114,9 @@ public class ProfileActivity extends AppCompatActivity
                     {
                         verification.setText(R.string.not_verified_email);
                     }
-                    username.setText(userAccount.getUsername());
-                    email.setText(userAccount.getEmail());
+                    username.setText(getString(R.string.username_text, userAccount.getUsername()));
+                    email.setText(getString(R.string.email_text,userAccount.getEmail()));
+                    UserSharedPreferences.getInstance(ProfileActivity.this).setInfo(Constants.USERNAME_KEY, userAccount.getUsername());
                 }
                 else
                 {
@@ -111,11 +126,21 @@ public class ProfileActivity extends AppCompatActivity
             }
         });
 
+        //adds uid and username to sharedPreferences, it's done here to prevent these details
+        //from missing when user logins from another device.
+        UserSharedPreferences.getInstance(this).setInfo(Constants.UID_KEY, userAccount.getUid());
+        UserSharedPreferences.getInstance(this).setInfo(Constants.USERNAME_KEY, userAccount.getUsername());
+
         chat.setOnClickListener(this);
+        savedMsg.setOnClickListener(this);
         settings.setOnClickListener(this);
         logout.setOnClickListener(this);
     }
 
+    /**
+     * triggered when user clicks on something with a onClick listener
+     * @param v  the view the user clicked on
+     */
     public void onClick(View v)
     {
         int id = v.getId();
@@ -125,6 +150,13 @@ public class ProfileActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
             intent.putExtra(Constants.CURRENT_USER_KEY, userAccount);
             startActivity(intent);
+        }
+        else if(id == savedMsg.getId())
+        {
+            Log.d(LOG_TAG, "clicked on saved msg");
+            Intent intent = new Intent(getApplicationContext(), SavedMessagesActivity.class);
+            startActivity(intent);
+
         }
         else if(id == settings.getId())
         {
