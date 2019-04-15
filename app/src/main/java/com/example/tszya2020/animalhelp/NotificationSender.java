@@ -48,13 +48,15 @@ public class NotificationSender
                 .setContentTitle(notifTitle)
                 .setContentText(notifContent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                //https://stackoverflow.com/questions/2632272/android-notification-doesnt-disappear-after-clicking-the-notifcation
+                .setAutoCancel(true)
                 // Set the intent that will fire when the user taps the notification
                 .setContentIntent(notifyPendingIntent);
 
         setChannel(inContext);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(inContext);
 
-// notificationId is a unique int for each notification that you must define
+        // notificationId is a unique int for each notification that you must define
         notificationManager.notify(Constants.CHAT_NOTIF_ID, builder.build());
 
     }
