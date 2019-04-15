@@ -50,6 +50,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     private String selectedLanguage;
     private String bothUid;
     private ArrayList<User> unavailUsers;
+    private CountDownTimer timer;
     private Request chatRequest;
     private DatabaseReference allUsersDBRef;
     private DatabaseReference requestRef;
@@ -282,6 +283,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                 //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#hasChild(java.lang.String)
                 if(dataSnapshot.hasChild(bothUid))
                 {
+                    timer.cancel();
                     connectChat();
                 }
             }
@@ -292,7 +294,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             }
         };
 
-        final CountDownTimer timer = new CountDownTimer(30000, 10000)
+        timer = new CountDownTimer(30000, 10000)
         {
             @Override
             public void onTick(long millisUntilFinished)
