@@ -72,8 +72,8 @@ public class ProfileActivity extends AppCompatActivity
         settings = findViewById(R.id.settings_button);
         logout = findViewById(R.id.log_out_button);
 
-
         userUid = mUser.getUid();
+        Log.d("email", "" + mUser.isEmailVerified());
         userRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(userUid);
         Log.d("userRef", userRef.toString());
 
@@ -106,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity
                 if(userAccount != null)
                 {
                     //show text according to verification status
-                    if(mAuth.getCurrentUser().isEmailVerified())
+                    if(mUser.isEmailVerified())
                     {
                         verification.setText(R.string.verified_email);
                     }
@@ -174,6 +174,22 @@ public class ProfileActivity extends AppCompatActivity
             mAuth.signOut();
             Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        Log.d("email", "" + mUser.isEmailVerified());
+        mUser.reload();
+        if(mUser.isEmailVerified())
+        {
+            verification.setText(R.string.verified_email);
+        }
+        else
+        {
+            verification.setText(R.string.not_verified_email);
         }
     }
 }
