@@ -69,7 +69,7 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
     /**
      * called to instantiate views onto layout and assign views to fields
      * @param inflater used to inflate views on fragment
-     * @param container the parent of where this frag
+     * @param container the parent of where this frag wioll be shown
      * @param savedInstanceState not used.
      * @return view for this fragment
      */
