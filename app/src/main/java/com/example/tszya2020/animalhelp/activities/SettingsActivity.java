@@ -1,13 +1,16 @@
 package com.example.tszya2020.animalhelp.activities;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.tszya2020.animalhelp.ChangePassswordFragment;
 import com.example.tszya2020.animalhelp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -22,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private Button changePassword;
     private Button changeMedication;
+    private Button sendEmail;
 
     /**
      * when activity is first opened, set content from settings_activity.xml,
@@ -35,26 +39,27 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        mUser.reload();
 
         changeMedication = findViewById(R.id.change_medication_button);
         changeMedication.setEnabled(false);
+        sendEmail = findViewById(R.id.resend_email_button);
+
         changePassword = findViewById(R.id.change_password_button);
-        if(!mUser.isEmailVerified())
+        if(mUser.isEmailVerified())
+        {
+            changePassword.setEnabled(true);
+            sendEmail.setEnabled(false);
+        }
+        else
         {
             changePassword.setEnabled(false);
+            sendEmail.setEnabled(true);
         }
+
+        sendEmail.setOnClickListener(this);
         changePassword.setOnClickListener(this);
     }
-
-    /**
-     * called when user clicks on password button, shows changePasswordFragment
-     */
-    public void openPassword()
-    {
-        ChangePassswordFragment passFrag = ChangePassswordFragment.newInstance();
-        passFrag.show(this.getSupportFragmentManager(), "passwordFragment");
-    }
-
     /**
      * triggers when user clicks on view with onClickListener
      * @param v view user clicked on
@@ -67,5 +72,30 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         {
             openPassword();
         }
+        if(i == sendEmail.getId())
+        {
+            sendEmail();
+        }
+    }
+    /**
+     * called when user clicks on password button, shows changePasswordFragment
+     */
+    private void openPassword()
+    {
+        ChangePassswordFragment passFrag = ChangePassswordFragment.newInstance();
+        passFrag.show(this.getSupportFragmentManager(), "passwordFragment");
+    }
+
+    private void sendEmail()
+    {
+        mUser.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("resend email", "Email sent.");
+                        }
+                    }
+                });
     }
 }
