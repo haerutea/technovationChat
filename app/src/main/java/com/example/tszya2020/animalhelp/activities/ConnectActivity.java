@@ -154,10 +154,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     /**
      * called when user presses find user, utilizes a basic for loop to search and match
      * each user with another user.  When another user is found, it then adds the request
-     * to the database, with triggers a Cloud Function, sending a notification to that user.
-     * Then, a count down timer for 20 seconds and a listener for chat branch is created.
-     * Listener listens for when the user accepts it, and starts ChatActivity accrodingly.
-     * If more than 20 seconds passed and opposing user did not accept, listener will be removed.
+     * to the database, which triggers a Cloud Function, and calls waitingToAccept().
      */
     private void findOpposingUser()
     {
@@ -267,9 +264,13 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    /**
+     * Then, a count down timer for 20 seconds and a listener for chat branch is created.
+     * Listener listens for when the user accepts it, and starts ChatActivity accordingly.
+     * If more than 20 seconds passed and opposing user did not accept, listener will be removed.
+     */
     private void waitForAccept()
     {
-
         final ProgressDialog waitingForConfirm = DialogUtils.showProgressDialog(ConnectActivity.this,
                 "Opposing user found, waiting for confirmation...");
         waitingForConfirm.show();
