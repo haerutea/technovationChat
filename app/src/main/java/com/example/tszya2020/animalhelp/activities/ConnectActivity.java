@@ -316,8 +316,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                         "Opposing user failed to accept within 40 seconds", Toast.LENGTH_LONG).show();
             }
         };
-        chatsRef.addValueEventListener(listener);
         timer.start();
+        chatsRef.addValueEventListener(listener);
     }
 
     /**
