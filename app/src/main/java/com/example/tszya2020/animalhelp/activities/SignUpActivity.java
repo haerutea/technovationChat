@@ -1,6 +1,5 @@
 package com.example.tszya2020.animalhelp.activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -34,7 +33,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import java.util.ArrayList;
 
 /**
- * A login screen that offers login via email and password.
+ * A sign up screen that offers login via email and password.
  */
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -55,6 +54,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText rePasswordField;
     private Button bSignUp;
 
+    /**
+     * when activity is first opened, set content from sign_up_activity.xml,
+     * get FirebaseAuth instance, get the list of strengths they checked from previous activity,
+     * set authListener to allow code to change username of FirebaseUser, assign views to fields,
+     * add onClickListener for sign up button
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -99,6 +105,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
+    /**
+     * triggered when user clicks on sign up button
+     * @param v the view user clicked on
+     */
     @Override
     public void onClick(View v)
     {
@@ -109,19 +119,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private boolean showDisclaimer()
-    {
-        //https://developer.android.com/guide/topics/ui/dialogs.html#java
-        String disclaimer = "This app isn\'t tended for emergency purposes, but rather simple and " +
-                "emotionally-easing chats with anonymous strangers.  If you're in a critical/dangerous" +
-                "situation, you should call emergency services or close ones to seek guidance instead.";
-        AlertDialog.Builder disclaimerBuilder = new AlertDialog.Builder(this);
-        //TODO: SET DISCLAIMER
-        /*disclaimerBuilder.setMessage(disclaimer)
-                .setTitle("PLEASE READ THIS")*/
-
-        return true;
-    }
+    /**
+     * shows loading dialog, checks if form is filled correctly, then calls built-in
+     * create user method from FirebaseAuth and pass the email and password parameters in,
+     * sends verification email and calls signUp method
+     * @param email from EditText emailField
+     * @param password from EditText passwordField
+     */
     private void createAccount(String email, String password)
     {
         final ProgressDialog loading = DialogUtils.showProgressDialog(this, getString(R.string.loading));
@@ -174,6 +178,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
+    /**
+     * checks if form is filled in correctly
+     * @return true or false depending on result
+     */
     private boolean formFilled()
     {
         boolean valid = true;
@@ -210,6 +218,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         return valid;
     }
 
+    /**
+     * sends verification email to email address of the freshly signed up user
+     */
     private void sendEmail()
     {
         mUser.sendEmailVerification()
@@ -223,6 +234,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
+    /**
+     * creates new User object and adds data to database, adds notif token to SharedPreferences,
+     * starts ProfileActivity when done
+     */
     private void signUp()
     {
         //change FirebaseUser displayName field
@@ -230,8 +245,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         User newUser = new User(mUser.getUid(), username, mUser.getEmail(), checkedStrengths, true, false);
         FirebaseDatabase.getInstance().getReference()
                 .child(Constants.USER_PATH).child(mUser.getUid()).setValue(newUser);
-        UserSharedPreferences.getInstance(SignUpActivity.this).setInfo(Constants.UID_KEY, mUser.getUid());
-        UserSharedPreferences.getInstance(this).setInfo(Constants.USERNAME_KEY, username);
+
         //https://firebase.google.com/docs/cloud-messaging/android/client?authuser=0
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -254,6 +268,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         startActivity(intent);
     }
 
+    /**
+     * when user comes back to this screen
+     */
     @Override
     protected void onResume()
     {
@@ -261,6 +278,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mAuth.addAuthStateListener(authListener);
     }
 
+    /**
+     * when user leaves this screen
+     */
     @Override
     protected void onStop()
     {
