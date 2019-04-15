@@ -125,32 +125,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
     }
 
     /**
-     * gets the amount of messages there are
-     * @return size of messageContent
-     */
-    public int getItemCount()
-    {
-        return messageContent.size();
-    }
-
-    /**
-     * adds new message to messageContent
-     * @param message new Message object to be added
-     */
-    public void addChat(Message message)
-    {
-        messageContent.add(message);
-    }
-
-    /**
-     * deletes everything in messageContent
-     */
-    public void clearContent()
-    {
-        messageContent.clear();
-    }
-
-    /**
      * called when new messages are sent, needing to create more views of the new chat messages
      * @param viewParent where the new view will be added
      * @param type view type, not used
@@ -177,5 +151,30 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHol
         messageHolder.addSaving(data);
     }
 
+    /**
+     * gets the amount of messages there are
+     * @return size of messageContent
+     */
+    public int getItemCount()
+    {
+        return messageContent.size();
+    }
+
+    /**
+     * adds new message to messageContent
+     * @param message new Message object to be added
+     */
+    public void addChat(Message message)
+    {
+        messageContent.add(message);
+    }
+
+    /**
+     * deletes everything in messageContent
+     */
+    public void clearContent()
+    {
+        messageContent.clear();
+    }
 }
 
