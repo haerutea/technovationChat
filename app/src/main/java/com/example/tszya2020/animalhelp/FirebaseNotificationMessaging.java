@@ -3,6 +3,7 @@ package com.example.tszya2020.animalhelp;
 import android.util.Log;
 
 import com.example.tszya2020.animalhelp.activities.ConfirmActivity;
+import com.example.tszya2020.animalhelp.activities.ProfileActivity;
 import com.example.tszya2020.animalhelp.object_classes.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -31,11 +32,24 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
         }
 
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
+        if (remoteMessage.getNotification() != null)
+        {
             Log.d(logTag, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            NotificationSender.setNotif(this, ConfirmActivity.class,
+            Class destinationClass = null;
+            boolean special = false;
+            if(remoteMessage.getNotification().getTitle().equals("You have a new chat request!"))
+            {
+                destinationClass = ConfirmActivity.class;
+                special = true;
+            }
+            else if(remoteMessage.getNotification().getTitle().equals("Deleted request"))
+            {
+                destinationClass = ProfileActivity.class;
+            }
+
+            NotificationSender.setNotif(this, destinationClass,
                     remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody(), true);
+                    remoteMessage.getNotification().getBody(), special);
         }
     }
 
