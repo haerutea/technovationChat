@@ -48,11 +48,16 @@ public class Request
     @Override
     public String toString()
     {
+        StringBuilder desc = new StringBuilder();
         for(Map.Entry<String, String> data : preferences.entrySet())
         {
-
+            desc.append(data.getKey());
+            desc.append(":");
+            desc.append(data.getValue());
+            desc.append("\n");
         }
+
         return username + " has requested to chat with you.  Here are the preferences chosen: "
-                + preferences.toString();
+                + desc.toString();
     }
 }
