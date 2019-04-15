@@ -116,8 +116,9 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
                             if (task.isSuccessful())
                             {
                                 Log.d(LOG_TAG, "Email sent.");
-                                Toast.makeText(getActivity(),
+                                Toast.makeText(getContext(),
                                         "Password reset email sent.", Toast.LENGTH_LONG).show();
+                                dismiss();
                             }
                             else
                             {
@@ -154,7 +155,6 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             resetPassword();
-            dismiss();
         }
     }
 
