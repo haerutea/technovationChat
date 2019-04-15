@@ -18,8 +18,15 @@ import java.util.ArrayList;
 
 //code referenced from: https://c1ctech.com/android-checkedtextview-example/
 // and https://guides.codepath.com/android/Heterogenous-Layouts-inside-RecyclerView
+
+/**
+ * adapter for recyclerView in StrengthsActivity, contains StrengthsTextHolder, StrengthsDescription,
+ */
 public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
+    /**
+     * viewHolder for actual strengths
+     */
     public class StrengthsTextHolder extends RecyclerView.ViewHolder
     {
         private CheckedTextView strengthsCheckView;
@@ -31,6 +38,9 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    /**
+     * view holder for the description of strength categories
+     */
     public class StrengthsDescription extends RecyclerView.ViewHolder
     {
         private TextView descriptionView;
@@ -42,6 +52,9 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    /**
+     * view holder for the next button
+     */
     public class NextButton extends RecyclerView.ViewHolder
     {
         private Button nextButton;
@@ -77,6 +90,10 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final int DESC = 1;
     private final int BUTTON = 2;
 
+    /**
+     * constructor, instantiates fields
+     * @param inStrengths arraylist containing all the strengths
+     */
     public StrengthsAdapter(ArrayList<String> inStrengths)
     {
         this.allStrengths = inStrengths;
@@ -84,6 +101,12 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     //Returns the view type of the item at position for the purposes of view recycling.
+
+    /**
+     * gets the type of the view specified view at position
+     * @param position position of item within allStrengths
+     * @return int value corresponding to type, -1 means it's a strength
+     */
     @Override
     public int getItemViewType(int position)
     {
@@ -101,6 +124,12 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return -1;
     }
 
+    /**
+     * called to add new view holders to parent
+     * @param parent where the new view will be added
+     * @param viewType viewType of view, specified in above method
+     * @return viewHolder object corresponding to the view type
+     */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
@@ -125,6 +154,11 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return viewHolder;
     }
 
+    /**
+     * called to display corresponding info onto viewHolder
+     * @param viewHolder viewHolder to be updated
+     * @param position position of item within allStrengths
+     */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position)
     {
@@ -142,16 +176,31 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
+    /**
+     * adds description to viewHolder
+     * @param descriptionHolder viewHolder of where to add info
+     * @param position position of item within allStrengths
+     */
     private void configDescription(StrengthsDescription descriptionHolder, int position)
     {
         descriptionHolder.descriptionView.setText(allStrengths.get(position));
     }
 
+    /**
+     * adds description to viewHolder
+     * @param buttonHolder viewHolder of where to add info
+     * @param position position of item within allStrengths
+     */
     private void configButton(NextButton buttonHolder, int position)
     {
         Button bNext = buttonHolder.nextButton;
     }
 
+    /**
+     * adds description to viewHolder, then adds onClickListener to view
+     * @param strengthsHolder viewHolder of where to add info
+     * @param position position of item within allStrengths
+     */
     private void configStrengthsText(StrengthsTextHolder strengthsHolder, int position)
     {
         final CheckedTextView checkView = strengthsHolder.strengthsCheckView;
@@ -184,12 +233,19 @@ public class StrengthsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         });
     }
 
+    /**
+     * gets the size of allStrengths
+     * @return size of allStrengths
+     */
     @Override
     public int getItemCount()
     {
         return allStrengths.size();
     }
 
+    /**
+     * @return arraylist of all the checkedStrengths
+     */
     public ArrayList<String> getChecked()
     {
         return this.checked;
