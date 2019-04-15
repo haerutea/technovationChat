@@ -2,6 +2,7 @@ package com.example.tszya2020.animalhelp.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,8 +42,6 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     private final String LOG_TAG = "ConnectActivity";
     private User userAccount;
     private User opposingUser;
-    private Chat newChatlog;
-    private String bothUsersUid;
     private final String AGE = "age";
     private String selectedAgeGroup;
     private final String CATEGORY ="category";
@@ -50,8 +49,11 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     private final String LANGUAGE = "language";
     private String selectedLanguage;
     private String bothUid;
+    private ArrayList<User> unavailUsers;
+    private Request chatRequest;
     private DatabaseReference allUsersDBRef;
     private DatabaseReference requestRef;
+    private DatabaseReference chatsRef;
 
     //UI
     private Button bFind;
@@ -71,6 +73,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connect_activity);
+        unavailUsers = new ArrayList<>();
 
         userAccount = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER_KEY);
 
@@ -126,7 +129,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         languageDropdown = findViewById(R.id.language_spinner);
         //items are in an array
         ArrayAdapter<String> languageArrAdapter = new ArrayAdapter<String>
-                (ConnectActivity.this, android.R.layout.simple_spinner_item, Constants.LANGUAGE_GROUPS);
+                (ConnectActivity.this, android.R.layout.simple_spinner_dropdown_item, Constants.LANGUAGE_GROUPS);
         languageDropdown.setAdapter(languageArrAdapter);
         //triggered whenever user selects something different
         languageDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -142,21 +145,24 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             {
             }
         });
+
+        allUsersDBRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH);
+        chatsRef = Constants.BASE_INSTANCE.child(Constants.CHAT_PATH);
     }
 
     /**
      * called when user presses find user, utilizes a basic for loop to search and match
      * each user with another user.  When another user is found, it then adds the request
      * to the database, with triggers a Cloud Function, sending a notification to that user.
-     * Then, a listener listens for when the user accepts it, and starts ChatActivity accrodingly.
+     * Then, a count down timer for 20 seconds and a listener for chat branch is created.
+     * Listener listens for when the user accepts it, and starts ChatActivity accrodingly.
+     * If more than 20 seconds passed and opposing user did not accept, listener will be removed.
      */
-    //TODO: WHAT IF USER DENIES
     private void findOpposingUser()
     {
         final ProgressDialog connecting = DialogUtils
                 .showProgressDialog(this, "Attempting to connect to chat");
 
-        allUsersDBRef = Constants.BASE_INSTANCE.child(Constants.USER_PATH);
         final TaskCompletionSource<String> getOpposingUserSource = new TaskCompletionSource<>();
 
         allUsersDBRef.addListenerForSingleValueEvent(new ValueEventListener()
@@ -172,9 +178,10 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                     User tempUser = userSnapshot.getValue(User.class);
                     boolean age, category, language;
 
-                    //if status-wise they're available
+                    //if status-wise they're available, and they haven't not-accepted a request for this user recently
                     if(!tempUser.getEmail().equals(userAccount.getEmail())
-                            && tempUser.getOnline() && !tempUser.getChatting())
+                            && tempUser.getOnline() && !tempUser.getChatting()
+                            && !unavailUsers.contains(tempUser))
                     {
                         //match preferences with user's strengths
                         ArrayList<String> matching = tempUser.getStrengths();
@@ -219,7 +226,7 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
                     setPreferences.put(LANGUAGE, selectedLanguage);
                     HashMap<String, Boolean> uid = new HashMap<>();
                     uid.put(userAccount.getUid(), true);
-                    Request chatRequest = new Request(uid, userAccount.getUsername(), setPreferences);
+                    chatRequest = new Request(uid, userAccount.getUsername(), setPreferences);
 
                     //add request details to userAccount branch
                     requestRef = Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
@@ -254,38 +261,66 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             {
                 Log.d("connect", " to chat database");
                 connecting.dismiss();
-                ProgressDialog waitingForConfirm = DialogUtils.showProgressDialog(ConnectActivity.this,
-                        "Opposing user found, waiting for confirmation...");
-                waitingForConfirm.show();
-
-                //listening for opposing user to accept andd make chat branch
-                Constants.BASE_INSTANCE.child(Constants.CHAT_PATH).addValueEventListener(new ValueEventListener()
-                {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        bothUid = opposingUser.getUid() + userAccount.getUid();
-                        //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#hasChild(java.lang.String)
-                        if(dataSnapshot.hasChild(bothUid))
-                        {
-                            connectChat();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-
-                    }
-                });
+                waitForAccept();
             }
         });
+    }
+
+    private void waitForAccept()
+    {
+
+        final ProgressDialog waitingForConfirm = DialogUtils.showProgressDialog(ConnectActivity.this,
+                "Opposing user found, waiting for confirmation...");
+        waitingForConfirm.show();
+
+        final ValueEventListener listener = new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                bothUid = opposingUser.getUid() + userAccount.getUid();
+                //https://firebase.google.com/docs/reference/android/com/google/firebase/database/DataSnapshot.html#hasChild(java.lang.String)
+                if(dataSnapshot.hasChild(bothUid))
+                {
+                    connectChat();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+            }
+        };
+
+        final CountDownTimer timer = new CountDownTimer(30000, 10000)
+        {
+            @Override
+            public void onTick(long millisUntilFinished)
+            {
+                Toast.makeText(ConnectActivity.this, (millisUntilFinished/1000) +
+                        " seconds left, opposing user has yet to accept", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFinish()
+            {
+                //if opposing user didn't accept within 30 seconds
+                chatsRef.removeEventListener(listener);
+                requestRef.removeValue();
+                waitingForConfirm.dismiss();
+                unavailUsers.add(opposingUser);
+                Toast.makeText(ConnectActivity.this,
+                        "Opposing user failed to accept within 30 seconds", Toast.LENGTH_LONG).show();
+            }
+        };
+        chatsRef.addValueEventListener(listener);
+        timer.start();
     }
 
     /**
      * adds information to intent and starts ChatActivity to chat with opposing user
      */
-    public void connectChat()
+    private void connectChat()
     {
         Chat chatlog = new Chat(opposingUser.getUid(), userAccount.getUid());
         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
