@@ -64,7 +64,7 @@ public class StrengthsActivity extends AppCompatActivity
     {
         //https://developer.android.com/guide/topics/ui/dialogs.html#java
         String disclaimer = "This app isn\'t tended for emergency purposes, but rather simple and " +
-                "emotionally-easing chats with anonymous strangers.  If you're in a critical/dangerous" +
+                "emotionally-easing chats with anonymous strangers.  If you're in a critical/dangerous " +
                 "situation, you should call emergency services or close ones to seek guidance instead.";
         AlertDialog.Builder disclaimerBuilder = new AlertDialog.Builder(this);
         disclaimerBuilder.setMessage(disclaimer)
