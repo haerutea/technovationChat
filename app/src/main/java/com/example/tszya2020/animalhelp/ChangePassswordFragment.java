@@ -23,7 +23,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 
-
+/**
+ * shown when user presses on change password button in settings, allows user to set their new password
+ */
 public class ChangePassswordFragment extends DialogFragment implements View.OnClickListener
 {
     private final String LOG_TAG = "changePasswordFragment";
@@ -37,22 +39,40 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
     private String rePassword;
     private String currentPassword;
 
+    /**
+     * required empty constructor
+     */
     public ChangePassswordFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * creates new object/instance of this class
+     * @return new object of this class
+     */
     public static ChangePassswordFragment newInstance()
     {
         return new ChangePassswordFragment();
     }
 
+    /**
+     * called when fragment is first created
+     * @param savedInstanceState data saved from onSaveInstanceState, not used
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * called to instantiate views onto layout and assign views to fields
+     * @param inflater used to inflate views on fragment
+     * @param container the parent of where this frag
+     * @param savedInstanceState not used.
+     * @return view for this fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -69,6 +89,10 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         return baseView;
     }
 
+    /**
+     * checks if form is filled in correctly
+     * @return true or false depending on status
+     */
     private boolean formFilled()
     {
         password = newPass.getText().toString();
@@ -108,6 +132,13 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         return false;
     }
 
+    /**
+     * called when user presses confirm, calls formFilled to check,
+     * calls built-in updatePassword method from FirebaseUser,
+     * if successful, dismiss progress dialog and Toast success message,
+     * if not, call reauthenticateAndChange method if it's a re-auth issue,
+     * else log the error message.
+     */
     private void confirmChange()
     {
         //do the passwords in 2 fields match
@@ -136,7 +167,6 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                                     throw task.getException();
                                 }
                                 //https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
-                                //TODO: re-authenticate user
                                 catch (FirebaseAuthRecentLoginRequiredException e)
                                 {
                                     reauthenticateAndChange();
@@ -152,13 +182,15 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         }
     }
 
+    /**
+     * reauthenticates user and tries to updatePassword again by calling confirmChange
+     * if re-auth was successful.  If not, Toast error message to user
+     */
     private void reauthenticateAndChange()
     {
+        //https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Get auth credentials from the user for re-authentication. The example below shows
-        // email and password credentials but there are multiple possible providers,
-        // such as GoogleAuthProvider or FacebookAuthProvider.
         AuthCredential credential = EmailAuthProvider
                 .getCredential(user.getEmail(), currentPassword);
 
@@ -189,8 +221,14 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
                     }
                 });
     }
+
+    /**
+     * triggered when user clicks on a button with onClickListener
+     * @param v the view the user clicked on
+     */
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
         int id = v.getId();
         if(id == confirm.getId())
         {
@@ -206,13 +244,22 @@ public class ChangePassswordFragment extends DialogFragment implements View.OnCl
         }
     }
 
+    /**
+     * called when fragment is first attached, has to be overridden
+     * @param context the context it'll be attached to
+     */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Context context)
+    {
         super.onAttach(context);
     }
 
+    /**
+     * called when fragment isn't attached to activity anymore
+     */
     @Override
-    public void onDetach() {
+    public void onDetach()
+    {
         super.onDetach();
     }
 }
