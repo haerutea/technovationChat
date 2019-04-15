@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * fragment shown when user presses on forgot password in LoginActivity
+ */
 public class ForgotPasswordFragment extends DialogFragment implements View.OnClickListener
 {
 
@@ -27,22 +30,40 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
     private Button bCancel;
     private Button bConfirm;
 
+    /**
+     * required empty constructor
+     */
     public ForgotPasswordFragment()
     {
         // Required empty public constructor
     }
 
+    /**
+     * creates new instance/object of this class
+     * @return new instance of this class
+     */
     public static ForgotPasswordFragment newInstance()
     {
         return new ForgotPasswordFragment();
     }
 
+    /**
+     * called when this is first created
+     * @param savedInstanceState save data from previous opens, not used
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * called to instantiate views onto layout and assign views to fields
+     * @param inflater used to inflate views on fragment
+     * @param container the parent of where this frag will be shown
+     * @param savedInstanceState not used.
+     * @return view for this fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -58,6 +79,10 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
         return baseView;
     }
 
+    /**
+     * checks if form was filled in correctly
+     * @return status of true or false
+     */
     private boolean formFilled()
     {
         inputEmail = forgotEmail.getText().toString();
@@ -72,6 +97,10 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
         return false;
     }
 
+    /**
+     * checks if form was filled, then calls built-in method which sends user a
+     * password reset email.  If successful, toast message.
+     */
     private void resetPassword()
     {
         if(formFilled())
@@ -84,26 +113,32 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
                         {
-                            if (task.isSuccessful()) {
+                            if (task.isSuccessful())
+                            {
                                 Log.d(LOG_TAG, "Email sent.");
+                                Toast.makeText(getActivity(),
+                                        "Password reset email sent.", Toast.LENGTH_LONG).show();
                             }
                             else
                             {
                                 try
                                 {
                                     throw task.getException();
-                                } catch (Exception e)
+                                }
+                                catch (Exception e)
                                 {
                                     Log.d(LOG_TAG, e.getMessage());
                                 }
                             }
                         }
                     });
-
-            Toast.makeText(getActivity(), "Password reset email sent.", Toast.LENGTH_LONG).show();
         }
     }
 
+    /**
+     * triggered when user clicks on buttons with onClickListeners
+     * @param v view the user clicked on
+     */
     @Override
     public void onClick(View v)
     {
@@ -123,6 +158,10 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
         }
     }
 
+    /**
+     * called when fragment is first attached, has to be overridden
+     * @param context the context it'll be attached to
+     */
     @Override
     public void onAttach(Context context)
     {
@@ -130,6 +169,9 @@ public class ForgotPasswordFragment extends DialogFragment implements View.OnCli
 
     }
 
+    /**
+     * called when fragment isn't attached to activity anymore
+     */
     @Override
     public void onDetach()
     {
