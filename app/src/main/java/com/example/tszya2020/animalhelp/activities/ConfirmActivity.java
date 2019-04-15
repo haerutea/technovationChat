@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tszya2020.animalhelp.UserSharedPreferences;
 import com.example.tszya2020.animalhelp.object_classes.Chat;
@@ -34,6 +35,7 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
     private String requesterUid;
     private Request sentRequest;
     private DatabaseReference requestRef;
+    private boolean deleted;
 
     //UI fields
     private TextView tDescript;
@@ -50,7 +52,7 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.confirm_activity);
-
+        deleted = false;
         logName = "confirmingRequest";
         currentUid = UserSharedPreferences.getInstance(ConfirmActivity.this).getStringInfo(Constants.UID_KEY);
 
@@ -70,17 +72,23 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
     private void setDescription()
     {
         final TaskCompletionSource<String> getRequestData = new TaskCompletionSource<>();
-        requestRef = Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH)
-                .child(currentUid);
+        requestRef = Constants.BASE_INSTANCE.child(Constants.REQUEST_PATH).child(currentUid);
         final ValueEventListener descriptListener = new ValueEventListener()
         {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-                sentRequest = dataSnapshot.getValue(Request.class);
-                Log.d(logName, "request " + sentRequest);
-                requesterUid = sentRequest.getUidString();
-                getRequestData.setResult(null);
+                if(dataSnapshot.exists())
+                {
+                    sentRequest = dataSnapshot.getValue(Request.class);
+                    Log.d(logName, "request " + sentRequest);
+                    requesterUid = sentRequest.getUidString();
+                    getRequestData.setResult(null);
+                }
+                else
+                {
+                    deleted = true;
+                }
             }
 
             @Override
@@ -98,7 +106,6 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
             public void onComplete(@NonNull Task<String> task)
             {
                 tDescript.setText(sentRequest.toString());
-                requestRef.removeEventListener(descriptListener);
             }
         });
 
@@ -115,12 +122,14 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
         //if accept button was clicked
         if(id == bAccept.getId())
         {
-            connectChat();
-        }
-        //if deny was clicked
-        else if(id == bDeny.getId())
-        {
-            //TODO: ADD DENY
+            if(!deleted)
+                connectChat();
+            else
+            {
+                Toast.makeText(this,
+                        "opposing user deleted the request, press back to exit this screen",
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -148,6 +157,5 @@ public class ConfirmActivity extends AppCompatActivity implements View.OnClickLi
         intent.putExtra(Constants.CHAT_ROOM_ID_KEY, bothUsersUid);
         intent.putExtra(Constants.CHAT_OBJECT_KEY, newChatlog);
         startActivity(intent);
-
     }
 }
