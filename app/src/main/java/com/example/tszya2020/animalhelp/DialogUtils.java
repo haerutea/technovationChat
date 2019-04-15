@@ -21,6 +21,7 @@ public class DialogUtils {
         ProgressDialog progress = new ProgressDialog(context);
         progress.setMessage(message);
         progress.setIndeterminate(true);
+        progress.setCancelable(false);
         progress.show();
         return progress;
     }
