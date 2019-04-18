@@ -68,10 +68,9 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
 
         //have to do this because UID might not have been saved to sharedPreferences
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = null;
         if(user != null)
         {
-            uid = user.getUid();
+            String uid = user.getUid();
             Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(uid)
                     .child(Constants.TOKEN_KEY).child(token).setValue(true);
             //change token value in sharedPref
