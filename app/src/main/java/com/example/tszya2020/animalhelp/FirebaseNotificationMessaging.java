@@ -5,6 +5,8 @@ import android.util.Log;
 import com.example.tszya2020.animalhelp.activities.ConfirmActivity;
 import com.example.tszya2020.animalhelp.activities.ProfileActivity;
 import com.example.tszya2020.animalhelp.object_classes.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -23,7 +25,8 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(RemoteMessage remoteMessage)
+    {
         Log.d(logTag, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
@@ -59,15 +62,20 @@ public class FirebaseNotificationMessaging extends FirebaseMessagingService
      * is initially generated so this is where you would retrieve the token.
      */
     @Override
-    public void onNewToken(String token) {
+    public void onNewToken(String token)
+    {
         Log.d(logTag, "new token: " + token);
-        String uid = getSharedPreferences(Constants.PREF_USER_INFO, MODE_PRIVATE)
-                .getString(Constants.UID_KEY, "");
-        //change token value in database
-        if(uid != null)
+
+        //have to do this because UID might not have been saved to sharedPreferences
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = null;
+        if(user != null)
+        {
+            uid = user.getUid();
             Constants.BASE_INSTANCE.child(Constants.USER_PATH).child(uid)
                     .child(Constants.TOKEN_KEY).child(token).setValue(true);
-        //change token value in sharedPref
-        UserSharedPreferences.getInstance(this).setInfo(Constants.TOKEN_KEY, token);
+            //change token value in sharedPref
+            UserSharedPreferences.getInstance(this).setInfo(Constants.TOKEN_KEY, token);
+        }
     }
 }
