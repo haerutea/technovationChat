@@ -2,7 +2,6 @@
 </br>
 Assignment name: Mental Health chat app </br>
 Student name: Tsz Yan Au
-<h6>I apologize for the repo name...</6>
 <p><b>Current login/signup is only available though email and password!</b></p>
 <h2>Launching/running/debugging the app</h2>
 The repo is an Android Studio project, so Android Studio is needed to run the repo as of now.  Currently the app launchs at AuthActivity (which is changed in AndroidManifest.xml but don't touch I guess)
